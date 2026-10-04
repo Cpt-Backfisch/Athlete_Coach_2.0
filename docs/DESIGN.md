@@ -43,6 +43,17 @@ Die Zuordnung steht im Code in `CATEGORIES` (`scripts/build.py`).
   beschriftet. Statt Einzel-Tooltips ein **Fadenkreuz** (`.xhit`/`.xh`), das alle Werte des Tages zeigt.
 - Schmale Bildschirme bekommen eine eigene SVG-Variante (`cls="narrow"`), damit die Schrift lesbar bleibt.
 
+## Diese Woche (Karte oben im Tab „Training")
+
+- Woche Mo–So, bezogen auf das Build-Datum (Europe/Berlin); Untertitel zeigt KW und Datumsbereich.
+- Drei Kennzahlen (Einheiten, Bewegungszeit, Lauf-km), darunter jeweils „Vorwoche" in `--muted`.
+- Dünner Balken = Zeitanteil je Sportart (Farben aus `CATEGORIES`), darunter Legende mit Zeiten.
+- Liste der Einheiten chronologisch, je Zeile Tag, Sportart, Distanz, Dauer. Antippen klappt Details auf
+  (natives `<details>`, funktioniert ohne JavaScript): Startzeit, Bewegungs-/Gesamtzeit inkl. Pause, Distanz,
+  Pace (/km Laufen & Gehen, /100 m Schwimmen) bzw. km/h (Rad), Höhenmeter, Anteil an der Wochenzeit.
+- Details zeigen nur Felder aus `KEEP` (`ingest.py`). Mehr (Puls, Watt …) erst nach Rücksprache.
+- Rad ohne Distanz = „Rad (indoor)", Distanz „–".
+
 ## Wettkämpfe (Karte „Wettkämpfe")
 
 - Eine Zeile pro Disziplin (Reihenfolge `DISCIPLINES` in `build.py`), nur Disziplinen mit Einträgen.
