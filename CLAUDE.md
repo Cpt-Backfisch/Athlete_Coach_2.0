@@ -14,6 +14,7 @@ Datenbank, keine API-Schlüssel.
 | Dashboard aktualisieren („aktualisier mein Dashboard", täglicher Task) | `docs/UPDATE.md` – genau befolgen |
 | Seite/Diagramme ändern oder erweitern | `docs/DESIGN.md` + `scripts/build.py` |
 | Nicos km für die 1000-km-Challenge eintragen | `docs/CHALLENGE.md` |
+| Coaching, Ziele, Wettkampfzeiten, Leistungswerte | `docs/ATHLETENPROFIL.md` |
 
 ## Struktur
 
@@ -25,7 +26,7 @@ data/activities.json    gefilterte Aktivitäten (eine pro Zeile), öffentlich
 data/challenge.json     1000-km-Challenge: Ziel + Nicos km-Stände (von Hand gepflegt)
 scripts/ingest.py       Strava-Antwort(en) → data/activities.json (Datenschutz-Filter, Duplikate)
 scripts/build.py        data/activities.json → index.html (alle Berechnungen, SVG-Diagramme)
-docs/                   Doku (STATUS, ARCHITEKTUR, UPDATE, DESIGN)
+docs/                   Doku (STATUS, ARCHITEKTUR, UPDATE, DESIGN, CHALLENGE, ATHLETENPROFIL)
 ```
 
 Lokal testen: `python3 scripts/build.py` und `index.html` im Browser öffnen bzw. per Playwright
@@ -44,7 +45,10 @@ screenshotten (Chromium unter `/opt/pw-browsers/chromium`).
    und Sebastians OK einholen, dann auf `main` pushen. Commits logisch trennen.
 7. **Am Ende jeder Arbeitssitzung `docs/STATUS.md` aktualisieren** (Stand, nächste Schritte,
    Entscheidungen ins Log). Architektur-Änderungen zusätzlich in `docs/ARCHITEKTUR.md`.
-8. Die alte App (Repo `athlete-coach`) ist **nicht** Teil dieses Projekts und wird nicht angefasst.
+8. **`docs/ATHLETENPROFIL.md` ist die Hauptquelle** für Ziele, Wettkampfzeiten und Leistungswerte (das Doc in der
+   Claude-App wird nicht mehr gepflegt). Vor jedem Coaching-Gespräch lesen; danach Änderungen Sebastian kurz zeigen
+   und direkt auf `main` pushen (kein Screenshot nötig). Der tägliche Update-Task ändert die Datei **nicht**.
+9. Die alte App (Repo `athlete-coach`) ist **nicht** Teil dieses Projekts und wird nicht angefasst.
 
 ## Zusammenarbeit mit Sebastian
 

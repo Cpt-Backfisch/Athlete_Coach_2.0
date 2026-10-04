@@ -25,7 +25,7 @@
 2. **Coach-Text** oben auf der Seite: ja/nein? (Der Task könnte 2–3 Sätze schreiben; wäre der einzige
    Teil, den Claude statt des Scripts erzeugt – Regeln dafür vorher festlegen.)
 3. **Wettkämpfe** pflegen: z. B. `data/races.json` (manuell gepflegt) für Countdown/Ergebnisse.
-   Nächstes A-Rennen: Frankfurt Marathon 25.10.2026, Ziel 3:50.
+   Nächstes Rennen: Frankfurt Marathon 25.10.2026, Ziel unter 3:37:34 (alle Rennen und Ziele: [`ATHLETENPROFIL.md`](ATHLETENPROFIL.md)).
 4. **Historische Daten** 2024/2025 nachladen (einmaliger Backfill über den Connector, gleicher Ablauf wie UPDATE.md mit früherem Startdatum).
 5. Optional: Icon/Logo für „Zum Home-Bildschirm".
 
@@ -47,4 +47,5 @@
 | 04.10.2026 | Python-Standardbibliothek only; statisches HTML ohne externe Ressourcen |
 | 04.10.2026 | 1000-km-Challenge: zählt Run, TrailRun, VirtualRun (Laufband); nicht Gehen/Wandern |
 | 04.10.2026 | Nico mit Namen und km öffentlich auf der Seite – mit Nico abgestimmt |
+| 04.10.2026 | Athletenprofil aus der Claude-App als `docs/ATHLETENPROFIL.md` ins Repo übernommen (ohne Marathon-Trainingsplan) |
 | 04.10.2026 | Nicos Daten manuell (`data/challenge.json`), weil der Strava-Connector nur Sebastians Konto liest |
