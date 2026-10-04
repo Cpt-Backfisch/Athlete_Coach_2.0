@@ -684,6 +684,7 @@ footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
 <nav class="tabs" role="tablist">
  <a href="#training" role="tab" data-tab="training" aria-selected="true">Training</a>
  <a href="#wettkaempfe" role="tab" data-tab="wettkaempfe" aria-selected="false">Wettkämpfe</a>
+ <a href="#challenges" role="tab" data-tab="challenges" aria-selected="false">Challenges</a>
 </nav>
 
 <div class="panel" id="p-training" data-panel="training">
@@ -691,15 +692,6 @@ footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
  <div class="kpi"><b>{{TOTAL}} h</b><span>Training {{YEAR}}</span></div>
  <div class="kpi"><b>{{COUNT}}</b><span>Einheiten {{YEAR}}</span></div>
  <div class="kpi"><b>{{LATEST}}</b><span>letzte Einheit</span></div>
-</section>
-
-<section class="card">
- <h2 id="c2t">{{C_GOAL}}-km-Challenge {{C_YEAR}}</h2>
- <p class="sub">Gelaufene Kilometer kumuliert, mit {{C_PARTNER}}</p>
- {{C_STATS}}
- <ul class="legend">{{C_LEGEND}}</ul>
- {{C_CHART}}
- <details><summary>Als Tabelle anzeigen</summary><div class="tw">{{C_TABLE}}</div></details>
 </section>
 
 <section class="card">
@@ -718,6 +710,17 @@ footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
  {{R_NEXT}}
  {{R_BLOCKS}}
  {{R_NOTE}}
+</section>
+</div>
+
+<div class="panel" id="p-challenges" data-panel="challenges">
+<section class="card">
+ <h2 id="c2t">{{C_GOAL}}-km-Challenge {{C_YEAR}}</h2>
+ <p class="sub">Gelaufene Kilometer kumuliert, mit {{C_PARTNER}}</p>
+ {{C_STATS}}
+ <ul class="legend">{{C_LEGEND}}</ul>
+ {{C_CHART}}
+ <details><summary>Als Tabelle anzeigen</summary><div class="tw">{{C_TABLE}}</div></details>
 </section>
 </div>
 
