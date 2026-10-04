@@ -9,6 +9,9 @@
 - ✅ Daten 2026 importiert: 130 Aktivitäten (01.01.–03.10.2026) in `data/activities.json`
 - ✅ `scripts/ingest.py` (Datenschutz-Filter) und `scripts/build.py` (Seite bauen)
 - ✅ Erste Seite: KPI-Kacheln + **Testgrafik** „Trainingsstunden pro Monat 2026 nach Sportart"
+- ✅ **1000-km-Challenge 2026** mit Nico (Chef): kumulierte Lauf-km, lineare Soll-Linie, Nicos Linie,
+  Stand/Soll/Differenz und nötige km pro Woche. Nicos Stände pflegt Sebastian per Chat → [`CHALLENGE.md`](CHALLENGE.md)
+- ⏳ Ersten Stand von Nico eintragen (bisher keine Daten → seine Linie ist noch ausgeblendet)
 - ✅ Täglicher Task „athlete.coach Dashboard-Update", 21:59 Uhr, folgt [`UPDATE.md`](UPDATE.md)
 - ⏳ **GitHub Pages einschalten** (Sebastian, einmalig): Repo → Settings → Pages → Source *Deploy from a branch* → Branch `main`, Ordner `/ (root)` → Save.
   Danach erreichbar unter `https://cpt-backfisch.github.io/Athlete_Coach_2.0/`
@@ -42,3 +45,6 @@
 | 04.10.2026 | Öffentliche Anzeige der Strava-Daten von Sebastian geprüft und freigegeben |
 | 04.10.2026 | Task täglich 21:59 Uhr, pusht ohne Rückfrage direkt auf `main` |
 | 04.10.2026 | Python-Standardbibliothek only; statisches HTML ohne externe Ressourcen |
+| 04.10.2026 | 1000-km-Challenge: zählt Run, TrailRun, VirtualRun (Laufband); nicht Gehen/Wandern |
+| 04.10.2026 | Nico mit Namen und km öffentlich auf der Seite – mit Nico abgestimmt |
+| 04.10.2026 | Nicos Daten manuell (`data/challenge.json`), weil der Strava-Connector nur Sebastians Konto liest |

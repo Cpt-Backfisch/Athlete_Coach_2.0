@@ -80,6 +80,9 @@ Beide Wege folgen derselben Schritt-für-Schritt-Anleitung: [`UPDATE.md`](UPDATE
 
 **Was passiert, wenn ein Lauf ausfällt?** (Connector antwortet nicht, Claude-Kontingent erschöpft, …) Nichts geht verloren: Der nächste Lauf holt alles seit dem **letzten erfolgreichen** Lauf nach. Die Seite ist dann nur einen Tag älter.
 
+**Von Hand gepflegte Daten:** `data/challenge.json` (Ziel der 1000-km-Challenge und Nicos km-Stände).
+Der tägliche Task fasst diese Datei nicht an; Einträge kommen per Chat dazu → [`CHALLENGE.md`](CHALLENGE.md).
+
 **Einen echten „Training fertig"-Auslöser gibt es nicht** – der Connector meldet sich nicht von selbst. Deshalb Zeitplan statt Echtzeit.
 
 ---
@@ -148,6 +151,7 @@ Weil Daten, Script und Seite unabhängig von Claude sind, muss im Ernstfall nur 
 - Task-Zeit: täglich 21:59 Uhr (Europe/Berlin)
 - Nur Python-Standardbibliothek, keine Abhängigkeiten; Seite ohne externe Ressourcen
 - Datenschutz-Filter als Code (`ingest.py`), Duplikat-Schlüssel = lokale Startzeit, keine Strava-ID im Repo
+- 1000-km-Challenge: Nicos Daten manuell in `data/challenge.json` (Connector sieht nur Sebastians Konto); Name und km öffentlich, mit Nico abgestimmt
 
 **Getestet**
 - ✅ Geplanter Task kann Strava-Daten abrufen (04.10.2026, ohne Rückfragen)
