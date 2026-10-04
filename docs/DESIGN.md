@@ -28,6 +28,9 @@ Feste Reihenfolge = Stapelreihenfolge. Die Palette ist auf Farbsehschwäche-Abst
 
 Die Zuordnung steht im Code in `CATEGORIES` (`scripts/build.py`).
 
+**Personen statt Sportarten** (Challenge-Grafik): Ich = `--run` (Blau), Partner = `--partner`
+(gleiche Werte wie Rad-Orange – das validierte Blau/Orange-Paar), Soll = `--muted`, gestrichelt.
+
 ## Diagramme
 
 - Dünne Balken, oben 4 px abgerundet, 2 px Abstand zwischen gestapelten Segmenten.
@@ -36,4 +39,6 @@ Die Zuordnung steht im Code in `CATEGORIES` (`scripts/build.py`).
 - **Tooltip** beim Antippen/Überfahren eines Segments (`data-tip`-Attribut).
 - Eine y-Achse pro Diagramm, nie zwei Skalen in einem Diagramm.
 - Text (Werte, Achsen) in Textfarben, nie in der Serienfarbe.
+- **Liniendiagramme:** 2 px Linien, Endpunkt als Punkt mit Ring in Kartenfarbe, Wert direkt rechts daneben
+  beschriftet. Statt Einzel-Tooltips ein **Fadenkreuz** (`.xhit`/`.xh`), das alle Werte des Tages zeigt.
 - Schmale Bildschirme bekommen eine eigene SVG-Variante (`cls="narrow"`), damit die Schrift lesbar bleibt.

@@ -13,6 +13,7 @@ Datenbank, keine API-Schlüssel.
 | Wie hängt alles zusammen, warum so? | `docs/ARCHITEKTUR.md` |
 | Dashboard aktualisieren („aktualisier mein Dashboard", täglicher Task) | `docs/UPDATE.md` – genau befolgen |
 | Seite/Diagramme ändern oder erweitern | `docs/DESIGN.md` + `scripts/build.py` |
+| Nicos km für die 1000-km-Challenge eintragen | `docs/CHALLENGE.md` |
 
 ## Struktur
 
@@ -21,6 +22,7 @@ CLAUDE.md               dieser Einstieg
 index.html              GENERIERT von scripts/build.py – nie von Hand bearbeiten
 .nojekyll               GitHub Pages liefert Dateien 1:1 aus
 data/activities.json    gefilterte Aktivitäten (eine pro Zeile), öffentlich
+data/challenge.json     1000-km-Challenge: Ziel + Nicos km-Stände (von Hand gepflegt)
 scripts/ingest.py       Strava-Antwort(en) → data/activities.json (Datenschutz-Filter, Duplikate)
 scripts/build.py        data/activities.json → index.html (alle Berechnungen, SVG-Diagramme)
 docs/                   Doku (STATUS, ARCHITEKTUR, UPDATE, DESIGN)
