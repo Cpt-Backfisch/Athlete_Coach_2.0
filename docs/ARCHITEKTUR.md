@@ -1,6 +1,6 @@
 # Athlete Coach 2.0 – Architektur
 
-> Stand: 04.10.2026 · Status: **in Planung**, Grundsatzentscheidungen getroffen, noch nichts gebaut außer dieser Doku.
+> Stand: 04.10.2026 · Status: **in Planung** – Grundsatzentscheidungen getroffen, technische Machbarkeit vollständig getestet, noch nichts gebaut außer dieser Doku.
 > Diese Datei ist die maßgebliche Beschreibung der Architektur. Bei Änderungen hier zuerst anpassen.
 
 ---
@@ -88,7 +88,7 @@ flowchart LR
 | **Claude-Task / Claude-Chat** | Strava **lesen**; nur **dieses eine Repo** lesen und beschreiben (über die Claude-GitHub-App, „Only select repositories") | Strava ändern; deine anderen Repos (z. B. die alte App) anfassen |
 | **Freunde / alle Besucher** | Dashboard ansehen; Repo ansehen (ist öffentlich) | etwas ändern |
 
-- Alles, was Claude ins Repo pusht, erscheint auf GitHub unter **deinem** Namen.
+- Commits von Claude erscheinen im Repo mit dem Autor **„Claude“** – so ist in der Historie klar erkennbar, was automatisch und was von dir kam.
 - Der Task läuft im Automatik-Modus, also **ohne Rückfragen**. Das ist gewollt.
 - **Zugriff entziehen:** GitHub → Settings → Applications → Claude-App deinstallieren (GitHub) bzw. Strava-Connector in den Claude-Einstellungen trennen (Strava). Wirkt sofort.
 
@@ -143,7 +143,8 @@ Weil Daten, Script und Seite unabhängig von Claude sind, muss im Ernstfall nur 
 **Getestet**
 - ✅ Geplanter Task kann Strava-Daten abrufen (04.10.2026, ohne Rückfragen)
 - ✅ Push auf `main` aus einer Claude-Sitzung (04.10.2026)
-- ⏳ Push auf `main` aus einem *geplanten* Task (Test läuft)
+- ✅ Geplanter Task: Strava-Abruf **und** Push auf `main` in einem Lauf, ohne Rückfragen, Dauer ca. 30 Sekunden (04.10.2026)
+- Hinweis aus dem Test: Das Repo ist in der Task-Sitzung bereits automatisch geklont. Der Task-Prompt soll das vorhandene Repo nutzen und nur falls es fehlt selbst klonen.
 
 **Offen**
 - Welche KPIs und Diagramme? → bestimmt auch die genaue Feldliste im Filter
