@@ -2,11 +2,17 @@
 
 Persönliches Trainings-Dashboard (Triathlon / Laufen) auf Basis von Strava-Daten.
 
-**Architektur (Stand 04.10.2026, in Planung)**
+**Dashboard:** https://cpt-backfisch.github.io/Athlete_Coach_2.0/
 
-- Ein geplanter Claude-Task ruft täglich neue Aktivitäten über den Strava-Connector ab.
-- Die Daten werden gefiltert (nur Zahlen, keine Orte/Namen) und in diesem Repo gespeichert.
-- Ein Script baut daraus die Dashboard-Seite.
+- Ein geplanter Claude-Task ruft täglich (ca. 22 Uhr) neue Aktivitäten über den Strava-Connector ab.
+- `scripts/ingest.py` filtert sie (nur Zahlen, keine Orte/Namen/IDs) nach `data/activities.json`.
+- `scripts/build.py` baut daraus `index.html`.
 - GitHub Pages veröffentlicht die Seite unter einem öffentlichen Link.
 
-Ausführlich: [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md)
+| Doku | Inhalt |
+|---|---|
+| [docs/STATUS.md](docs/STATUS.md) | aktueller Stand, nächste Schritte, Entscheidungen |
+| [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md) | Aufbau, Datenfluss, Zugriffsrechte, Hosting |
+| [docs/UPDATE.md](docs/UPDATE.md) | Ablauf des täglichen Updates |
+| [docs/DESIGN.md](docs/DESIGN.md) | Gestaltungsregeln, Farben |
+| [CLAUDE.md](CLAUDE.md) | Einstieg für Claude-Sitzungen |
