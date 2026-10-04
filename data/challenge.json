@@ -1,0 +1,9 @@
+{
+ "_info": "1000-km-Lauf-Challenge. Von Hand gepflegt (nicht vom täglichen Task). Partner-Einträge: Datum + Gesamt-km des Jahres bis zu diesem Tag.",
+ "year": 2026,
+ "goal_km": 1000,
+ "partner": {
+  "name": "Nico",
+  "entries": []
+ }
+}
