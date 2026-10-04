@@ -11,6 +11,9 @@
 - ✅ Erste Seite: KPI-Kacheln + **Testgrafik** „Trainingsstunden pro Monat 2026 nach Sportart"
 - ✅ **1000-km-Challenge 2026** mit Nico (Chef): kumulierte Lauf-km, lineare Soll-Linie, Nicos Linie,
   Stand/Soll/Differenz und nötige km pro Woche. Nicos Stände pflegt Sebastian per Chat → [`CHALLENGE.md`](CHALLENGE.md)
+- ✅ **Menü-Tabs** „Training" und „Wettkämpfe" (eine Seite, Umschalten per Tab, Link-Anker `#wettkaempfe`)
+- ✅ **Wettkämpfe-Tab**: alle Rennen seit 2015 und geplante Starts je Disziplin, Bestzeit hervorgehoben, Countdown in Wochen.
+  Daten in `data/races.json` (offizielle Zeiten aus dem Athletenprofil; nur Eschborn–Frankfurt 2026 laut Uhr)
 - ⏳ Ersten Stand von Nico eintragen (bisher keine Daten → seine Linie ist noch ausgeblendet)
 - ✅ Täglicher Task „athlete.coach Dashboard-Update", 21:59 Uhr, folgt [`UPDATE.md`](UPDATE.md)
 - ⏳ **GitHub Pages einschalten** (Sebastian, einmalig): Repo → Settings → Pages → Source *Deploy from a branch* → Branch `main`, Ordner `/ (root)` → Save.
@@ -24,8 +27,8 @@
    Countdown zum nächsten Wettkampf, Lauf-km kumuliert, Verlauf langer Läufe.
 2. **Coach-Text** oben auf der Seite: ja/nein? (Der Task könnte 2–3 Sätze schreiben; wäre der einzige
    Teil, den Claude statt des Scripts erzeugt – Regeln dafür vorher festlegen.)
-3. **Wettkämpfe** pflegen: z. B. `data/races.json` (manuell gepflegt) für Countdown/Ergebnisse.
-   Nächstes Rennen: Frankfurt Marathon 25.10.2026, Ziel unter 3:37:34 (alle Rennen und Ziele: [`ATHLETENPROFIL.md`](ATHLETENPROFIL.md)).
+3. **Wettkämpfe:** nach jedem Rennen Ergebnis in `data/races.json` (und im Athletenprofil) eintragen.
+   Nächstes Rennen: Frankfurt Marathon 25.10.2026, Ziel unter 3:37:34. Zielzeiten Kraichgau/Ironman bewusst offen.
 4. **Historische Daten** 2024/2025 nachladen (einmaliger Backfill über den Connector, gleicher Ablauf wie UPDATE.md mit früherem Startdatum).
 5. Optional: Icon/Logo für „Zum Home-Bildschirm".
 
@@ -48,4 +51,6 @@
 | 04.10.2026 | 1000-km-Challenge: zählt Run, TrailRun, VirtualRun (Laufband); nicht Gehen/Wandern |
 | 04.10.2026 | Nico mit Namen und km öffentlich auf der Seite – mit Nico abgestimmt |
 | 04.10.2026 | Athletenprofil aus der Claude-App als `docs/ATHLETENPROFIL.md` ins Repo übernommen (ohne Marathon-Trainingsplan) |
+| 04.10.2026 | Wettkämpfe in `data/races.json` von Hand gepflegt (Strava markiert Rennen nicht verlässlich). Rennnamen öffentlich; Patrick-Vergleich nicht auf der Seite. Marathon 2015 bleibt drin |
+| 04.10.2026 | Seite in Tabs „Training" / „Wettkämpfe" aufgeteilt, damit man nicht ewig scrollt |
 | 04.10.2026 | Nicos Daten manuell (`data/challenge.json`), weil der Strava-Connector nur Sebastians Konto liest |
