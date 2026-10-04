@@ -1,0 +1,25 @@
+{
+ "_info": "Wettkämpfe (vergangen + geplant). Von Hand gepflegt; Quelle der Ergebnisse ist Sebastians Athletenprofil (offizielle Zeiten). result = Endzeit h:mm:ss (bei Triathlon inkl. Wechsel), target = Zielzeit h:mm:ss, 'pb' (= aktuelle Bestzeit schlagen) oder weglassen (Ziel offen). beat=true: Ziel heißt 'unter …'. source 'offiziell' = Ergebnisliste/Profil, 'uhr' = Zeit aus Strava/Uhr. Disziplinen-Schlüssel: hm, marathon, tri_kurz, tri_mittel, tri_lang, rad.",
+ "races": [
+  {"date": "2015-04-26", "name": "Hamburg Marathon", "discipline": "marathon", "result": "7:51:00", "source": "offiziell"},
+  {"date": "2023-03-19", "name": "Frankfurt Halbmarathon", "discipline": "hm", "result": "2:00:17", "source": "offiziell"},
+  {"date": "2023-07-16", "name": "Hamburg Kurzdistanz", "discipline": "tri_kurz", "result": "3:02:30", "source": "offiziell"},
+  {"date": "2024-04-28", "name": "Hamburg Halbmarathon", "discipline": "hm", "result": "1:58:53", "source": "offiziell"},
+  {"date": "2024-07-14", "name": "Hamburg Kurzdistanz", "discipline": "tri_kurz", "result": "2:38:56", "source": "offiziell"},
+  {"date": "2024-07-28", "name": "Frankfurt Olympisch", "discipline": "tri_kurz", "result": "2:51:52", "source": "offiziell"},
+  {"date": "2024-10-13", "name": "Offenbach Halbmarathon", "discipline": "hm", "result": "1:43:48", "source": "offiziell"},
+  {"date": "2025-03-16", "name": "Frankfurt Halbmarathon", "discipline": "hm", "result": "1:40:30", "source": "offiziell"},
+  {"date": "2025-06-15", "name": "Würzburg Olympisch", "discipline": "tri_kurz", "result": "2:50:24", "source": "offiziell"},
+  {"date": "2025-07-13", "name": "Hamburg Kurzdistanz", "discipline": "tri_kurz", "result": "2:27:39", "source": "offiziell"},
+  {"date": "2025-08-03", "name": "Frankfurt Mitteldistanz", "discipline": "tri_mittel", "result": "4:55:17", "source": "offiziell"},
+  {"date": "2026-03-22", "name": "Frankfurt Halbmarathon", "discipline": "hm", "result": "1:38:57", "source": "offiziell"},
+  {"date": "2026-04-26", "name": "Hamburg Halbmarathon", "discipline": "hm", "result": "1:36:10", "source": "offiziell"},
+  {"date": "2026-05-01", "name": "Eschborn–Frankfurt (96 km)", "discipline": "rad", "result": "3:43:56", "source": "uhr"},
+  {"date": "2026-07-12", "name": "Hamburg Kurzdistanz", "discipline": "tri_kurz", "result": "2:29:35", "source": "offiziell"},
+  {"date": "2026-08-02", "name": "Frankfurt Mitteldistanz", "discipline": "tri_mittel", "result": "4:38:25", "source": "offiziell"},
+  {"date": "2026-10-25", "name": "Frankfurt Marathon", "discipline": "marathon", "target": "3:37:34", "beat": true},
+  {"date": "2027-03-21", "name": "Frankfurt Halbmarathon", "discipline": "hm", "target": "pb"},
+  {"date": "2027-05-23", "name": "70.3 Ironman Kraichgau", "discipline": "tri_mittel"},
+  {"date": "2027-06-27", "name": "Ironman Frankfurt", "discipline": "tri_lang"}
+ ]
+}
