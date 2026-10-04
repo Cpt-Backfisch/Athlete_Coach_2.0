@@ -283,6 +283,219 @@ def challenge_js_data(s: dict) -> str:
     return json.dumps(d, separators=(",", ":")).replace("</", "<\\/")
 
 
+# ---------------------------------------------------------------------------
+# Wettkämpfe: Historie + geplante Starts je Disziplin, Bestzeit hervorgehoben
+# ---------------------------------------------------------------------------
+RACES = ROOT / "data" / "races.json"
+DISCIPLINES = [  # Reihenfolge auf der Seite
+    ("hm", "Halbmarathon"),
+    ("marathon", "Marathon"),
+    ("tri_kurz", "Triathlon Kurzdistanz"),
+    ("tri_mittel", "Triathlon Mitteldistanz"),
+    ("tri_lang", "Triathlon Langdistanz"),
+    ("rad", "Radrennen"),
+]
+
+
+def parse_hms(s: str) -> int:
+    parts = [int(p) for p in s.split(":")]
+    while len(parts) < 3:
+        parts.insert(0, 0)
+    h, m, sec = parts
+    return h * 3600 + m * 60 + sec
+
+
+def fmt_hms(sec: int) -> str:
+    sec = int(round(sec))
+    return f"{sec // 3600}:{sec % 3600 // 60:02d}:{sec % 60:02d}"
+
+
+def fmt_delta(sec: int) -> str:
+    sec = int(round(abs(sec)))
+    return f"{sec // 3600}:{sec % 3600 // 60:02d}:{sec % 60:02d}" if sec >= 3600 \
+        else f"{sec // 60}:{sec % 60:02d}"
+
+
+def fmt_date(d) -> str:
+    return d.strftime("%d.%m.%Y")
+
+
+def countdown(d, today) -> str:
+    n = (d - today).days
+    if n == 0:
+        return "heute"
+    if n == 1:
+        return "morgen"
+    if n < 14:
+        return f"in {n} Tagen"
+    return f"in {n // 7} Wochen"
+
+
+def race_data(cfg: dict, today) -> dict:
+    """Je Disziplin: Ergebnisse, geplante Starts, Bestzeit. Alles hier gerechnet."""
+    out = {}
+    for key, label in DISCIPLINES:
+        rs = []
+        for r in cfg["races"]:
+            if r["discipline"] != key:
+                continue
+            d = date.fromisoformat(r["date"])
+            rs.append({"date": d, "name": r["name"], "source": r.get("source"),
+                       "result": parse_hms(r["result"]) if r.get("result") else None,
+                       "target_raw": r.get("target"), "beat": bool(r.get("beat"))})
+        if not rs:
+            continue
+        rs.sort(key=lambda r: r["date"])
+        past = [r for r in rs if r["result"] is not None]
+        future = [r for r in rs if r["result"] is None and r["date"] >= today]
+        pb = min(past, key=lambda r: (r["result"], r["date"])) if past else None
+        for r in future:
+            t = r["target_raw"]
+            if t == "pb":
+                r["target"] = pb["result"] if pb else None
+                r["beat"] = True
+                r["target_is_pb"] = True
+            else:
+                r["target"] = parse_hms(t) if t else None
+                r["target_is_pb"] = False
+        out[key] = {"label": label, "past": past, "future": future, "pb": pb}
+    return out
+
+
+def race_span(v: dict, today) -> tuple:
+    """Zeitachse einer Disziplin: 1. Jan. des ersten Jahres … 31. Dez. des letzten Jahres (inkl. heute)."""
+    ds = [r["date"] for r in v["past"] + v["future"]] + [today]
+    return date(min(ds).year, 1, 1), date(max(ds).year + 1, 1, 1)
+
+
+def race_svg(v: dict, span: tuple, today, W: int = 720, H: int = 132, cls: str = "wide") -> str:
+    """Zeitstrahl einer Disziplin: Ergebnisse (Punkte), Bestzeit (PB), Zielzeiten (Ring, gestrichelt).
+    y-Achse: schneller = weiter oben."""
+    pts = [(r["date"], r["result"]) for r in v["past"]]
+    tgts = [(r["date"], r["target"]) for r in v["future"] if r.get("target")]
+    times = [t for _, t in pts + tgts]
+    L, R, T, B = (46, 14, 34, 22) if W > 500 else (40, 10, 34, 22)
+    pw, ph = W - L - R, H - T - B
+    lo, hi = min(times), max(times)
+    pad = max((hi - lo) * 0.15, 120)
+    lo, hi = lo - pad, hi + pad
+    step = next((s for s in (60, 120, 300, 600, 900, 1800, 3600, 7200) if (hi - lo) / s <= 4), 7200)
+    t0, t1 = span
+    days = (t1 - t0).days
+    x = lambda d: L + (d - t0).days / days * pw
+    y = lambda t: T + (t - lo) / (hi - lo) * ph          # schneller (kleiner) = oben
+
+    parts = [f'<svg viewBox="0 0 {W} {H}" role="img" class="chart {cls} rc">']
+    first = -(-int(lo) // step) * step
+    for t in range(first, int(hi) + 1, step):
+        lab = f"{t // 3600}:{t % 3600 // 60:02d}"
+        parts.append(f'<line class="grid" x1="{L}" x2="{W-R}" y1="{y(t):.1f}" y2="{y(t):.1f}"/>'
+                     f'<text class="tick" x="{L-6}" y="{y(t)+4:.1f}" text-anchor="end">{lab}</text>')
+    for yr in range(t0.year, t1.year):
+        xa, xb = x(date(yr, 1, 1)), x(date(yr + 1, 1, 1))
+        if yr > t0.year:
+            parts.append(f'<line class="mtick" x1="{xa:.1f}" x2="{xa:.1f}" y1="{T+ph:.1f}" y2="{T+ph+4:.1f}"/>')
+        nyears = t1.year - t0.year
+        every = 1 if nyears <= (8 if W > 500 else 5) else (2 if nyears <= (16 if W > 500 else 10) else 3)
+        if (t1.year - 1 - yr) % every == 0:
+            parts.append(f'<text class="tick" x="{(xa+xb)/2:.1f}" y="{H-6}" text-anchor="middle">{yr}</text>')
+    parts.append(f'<line class="axis" x1="{L}" x2="{W-R}" y1="{T+ph:.1f}" y2="{T+ph:.1f}"/>')
+    if t0 <= today < t1:  # heute
+        xt = x(today)
+        parts.append(f'<line class="today" x1="{xt:.1f}" x2="{xt:.1f}" y1="12" y2="{T+ph:.1f}"/>'
+                     f'<text class="tick" x="{xt + (4 if xt < W - R - 40 else -4):.1f}" y="10" text-anchor="{"start" if xt < W - R - 40 else "end"}">heute</text>')
+    if len(pts) > 1:
+        d = " ".join(f"{'M' if i == 0 else 'L'}{x(a):.1f},{y(b):.1f}" for i, (a, b) in enumerate(pts))
+        parts.append(f'<path class="rline" d="{d}"/>')
+    if pts and tgts:
+        a, b = pts[-1]
+        c, e = tgts[0]
+        parts.append(f'<line class="rtgt" x1="{x(a):.1f}" y1="{y(b):.1f}" x2="{x(c):.1f}" y2="{y(e):.1f}"/>')
+    pb = v["pb"]
+    for r in v["past"]:
+        is_pb = pb is r
+        tip = html.escape(f"{fmt_date(r['date'])} · {r['name']}: {fmt_hms(r['result'])}"
+                          + (" · Bestzeit" if is_pb else ""))
+        parts.append(f'<circle class="rdot{" rpb" if is_pb else ""}" cx="{x(r["date"]):.1f}" '
+                     f'cy="{y(r["result"]):.1f}" r="{6 if is_pb else 4}" data-tip="{tip}"/>')
+    for r in v["future"]:
+        if not r.get("target"):
+            continue
+        tip = html.escape(f"{fmt_date(r['date'])} · {r['name']}: Ziel "
+                          f"{'unter ' if r['beat'] else ''}{fmt_hms(r['target'])}")
+        parts.append(f'<circle class="rgoal" cx="{x(r["date"]):.1f}" cy="{y(r["target"]):.1f}" '
+                     f'r="5" data-tip="{tip}"/>')
+    if pb:  # Bestzeit direkt über dem Punkt beschriften
+        px, py = x(pb["date"]), y(pb["result"])
+        px = min(max(px, L + 40), W - R - 40)
+        parts.append(f'<text class="rlbl" x="{px:.1f}" y="{py-11:.1f}" '
+                     f'text-anchor="middle">PB {fmt_hms(pb["result"])}</text>')
+    parts.append("</svg>")
+    return "".join(parts)
+
+
+def races_html(rd: dict, today) -> str:
+    if not rd:
+        return '<p class="sub">Noch keine Wettkämpfe eingetragen.</p>'
+    blocks = []
+    for key, _ in DISCIPLINES:
+        if key not in rd:
+            continue
+        v = rd[key]
+        span = race_span(v, today)
+        pb = v["pb"]
+        badge = (f'<span class="pbb">Bestzeit <b>{fmt_hms(pb["result"])}</b>'
+                 f'<i>{fmt_date(pb["date"])}</i></span>' if pb
+                 else '<span class="pbb none">noch keine Bestzeit</span>')
+        n_pts = len(v["past"]) + sum(1 for r in v["future"] if r.get("target"))
+        chart = (race_svg(v, span, today) + race_svg(v, span, today, W=360, H=140, cls="narrow")
+                 if n_pts >= 2 else "")
+        rows = []
+        for r in v["future"]:
+            if r.get("target"):
+                goal = (f"Ziel: neue PB (unter {fmt_hms(r['target'])})" if r["target_is_pb"]
+                        else f"Ziel {'unter ' if r['beat'] else ''}{fmt_hms(r['target'])}")
+            elif r["target_raw"] == "pb":
+                goal = "Ziel: erste Bestzeit"
+            else:
+                goal = "Zielzeit offen"
+            rows.append(f'<li class="up"><span class="rd">{fmt_date(r["date"])}'
+                        f'<em>{countdown(r["date"], today)}</em></span>'
+                        f'<span class="rn">{html.escape(r["name"])}</span>'
+                        f'<span class="rt goal">{goal}</span></li>')
+        for r in reversed(v["past"]):
+            if pb is r:
+                extra = '<em class="pbt">PB</em>'
+            else:
+                extra = f'<em>+{fmt_delta(r["result"] - pb["result"])}</em>'
+            rows.append(f'<li><span class="rd">{fmt_date(r["date"])}</span>'
+                        f'<span class="rn">{html.escape(r["name"])}</span>'
+                        f'<span class="rt"><b>{fmt_hms(r["result"])}</b>{extra}</span></li>')
+        blocks.append(f'<div class="disc"><div class="dh"><h3>{v["label"]}</h3>{badge}</div>'
+                      f'{chart}<ul class="rl">{"".join(rows)}</ul></div>')
+    return "".join(blocks)
+
+
+def next_race_html(rd: dict, today) -> str:
+    fut = sorted((r for v in rd.values() for r in v["future"]), key=lambda r: r["date"])
+    if not fut:
+        return ""
+    r = fut[0]
+    return (f'<p class="note">Nächster Start: <b>{html.escape(r["name"])}</b> · '
+            f'{fmt_date(r["date"])} · {countdown(r["date"], today)}</p>')
+
+
+def races_note(cfg: dict) -> str:
+    legend = '<span class="pbx"></span> Bestzeit · <span class="gx"></span> Zielzeit'
+    watch = [f'{html.escape(r["name"])} {r["date"][:4]}' for r in cfg["races"]
+             if r.get("result") and r.get("source") == "uhr"]
+    pre = ""
+    if watch:
+        pre = ("Offizielle Endzeiten, Triathlon inkl. Wechsel. Zeit laut Uhr (Strava): "
+               + ", ".join(watch) + ".<br>")
+    return f'<p class="fine">{pre}{legend}</p>'
+
+
 def table_html(rows: list, last_month: int) -> str:
     head = "".join(f"<th>{l}</th>" for _, l, _ in CATEGORIES)
     body = []
@@ -317,6 +530,9 @@ def main() -> None:
                 + (f'<li><span class="ls ls-p"></span>{pname}</li>' if cs["partner_pts"] else "")
                 + '<li><span class="ls ls-t"></span>Soll (linear)</li>')
 
+    rcfg = json.loads(RACES.read_text(encoding="utf-8")) if RACES.exists() else {"races": []}
+    rd = race_data(rcfg, now.date())
+
     page = TEMPLATE
     for k, v in {
         "{{YEAR}}": str(year),
@@ -336,6 +552,9 @@ def main() -> None:
         "{{C_CHART}}": challenge_svg(cs) + challenge_svg(cs, W=360, H=280, cls="narrow"),
         "{{C_TABLE}}": challenge_table(cs),
         "{{C_DATA}}": challenge_js_data(cs),
+        "{{R_NEXT}}": next_race_html(rd, now.date()),
+        "{{R_BLOCKS}}": races_html(rd, now.date()),
+        "{{R_NOTE}}": races_note(rcfg),
     }.items():
         page = page.replace(k, v)
     OUT.write_text(page, encoding="utf-8")
@@ -350,25 +569,26 @@ TEMPLATE = """<!doctype html>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Athlete Coach</title>
 <meta name="robots" content="noindex">
+<script>document.documentElement.classList.add('js')</script>
 <style>
 :root{color-scheme:light;
  --bg:#fcfcfb;--card:#ffffff;--border:#e6e5e0;--text:#0b0b0b;--text-2:#52514e;--muted:#8a8984;
  --grid:#ecebe7;--axis:#c9c8c2;
- --run:#2a78d6;--bike:#eb6834;--swim:#1baf7a;--hike:#eda100;--other:#e87ba4;--partner:#eb6834}
+ --run:#2a78d6;--bike:#eb6834;--swim:#1baf7a;--hike:#eda100;--other:#e87ba4;--partner:#eb6834;--pb:#7d5bd9}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
  --bg:#141413;--card:#1a1a19;--border:#2c2c2a;--text:#ffffff;--text-2:#c3c2b7;--muted:#8f8e86;
  --grid:#2a2a28;--axis:#4a4a46;
- --run:#3987e5;--bike:#d95926;--swim:#199e70;--hike:#c98500;--other:#d55181;--partner:#d95926}}
+ --run:#3987e5;--bike:#d95926;--swim:#199e70;--hike:#c98500;--other:#d55181;--partner:#d95926;--pb:#a48bea}}
 :root[data-theme="dark"]{color-scheme:dark;
  --bg:#141413;--card:#1a1a19;--border:#2c2c2a;--text:#ffffff;--text-2:#c3c2b7;--muted:#8f8e86;
  --grid:#2a2a28;--axis:#4a4a46;
- --run:#3987e5;--bike:#d95926;--swim:#199e70;--hike:#c98500;--other:#d55181;--partner:#d95926}
+ --run:#3987e5;--bike:#d95926;--swim:#199e70;--hike:#c98500;--other:#d55181;--partner:#d95926;--pb:#a48bea}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);
  font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
  padding:max(20px,env(safe-area-inset-top)) 16px 40px}
 main{max-width:760px;margin:0 auto}
-header{display:flex;align-items:baseline;gap:6px;margin-bottom:20px}
+header{display:flex;align-items:baseline;gap:6px;margin-bottom:14px}
 .brand{font-weight:700;font-size:20px;letter-spacing:-.01em}
 .brand i{color:#8e6fe0;font-style:normal}
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
@@ -416,6 +636,43 @@ th:first-child{text-align:left}thead th{color:var(--text-2);font-weight:600}
 .mtick{stroke:var(--axis);stroke-width:1}
 .xh{stroke:var(--axis);stroke-width:1;opacity:0}.xhit{fill:transparent;cursor:crosshair}
 tfoot th,tfoot td{border-bottom:0;font-weight:600}
+.disc{border-top:1px solid var(--border);padding-top:14px;margin-top:14px}
+.disc:first-of-type{margin-top:4px}
+.dh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+h3{font-size:15px;margin:0}
+.pbb{font-size:13px;color:var(--text-2);font-variant-numeric:tabular-nums}
+.pbb b{color:var(--pb);font-size:17px;margin:0 4px;letter-spacing:-.01em}
+.pbb i{font-style:normal;color:var(--muted);font-size:12px}
+.pbb.none{color:var(--muted)}
+.rc{margin:2px 0 4px}
+.rline{fill:none;stroke:var(--axis);stroke-width:1.5}
+.rtgt{stroke:var(--pb);stroke-width:1.5;stroke-dasharray:4 4;opacity:.7}
+.rdot{fill:var(--text-2);stroke:var(--card);stroke-width:2}
+.rdot.rpb{fill:var(--pb)}
+.rgoal{fill:var(--card);stroke:var(--pb);stroke-width:2;stroke-dasharray:3 2}
+.today{stroke:var(--axis);stroke-width:1;stroke-dasharray:2 3}
+.chart .rlbl{fill:var(--pb);font-weight:700}
+.rl{list-style:none;margin:6px 0 0;padding:0;font-size:14px;font-variant-numeric:tabular-nums}
+.rl li{display:grid;grid-template-columns:92px 1fr auto;gap:2px 10px;padding:6px 0;border-bottom:1px solid var(--border);align-items:baseline}
+.rl li:last-child{border-bottom:0}
+.rd{color:var(--text-2);font-size:13px}
+.rd em{display:block;font-style:normal;color:var(--pb);font-weight:600;font-size:12px}
+.rt{text-align:right;white-space:nowrap}
+.rt em{font-style:normal;color:var(--muted);font-size:12px;margin-left:8px}
+.rt em.pbt{color:var(--card);background:var(--pb);border-radius:4px;padding:1px 5px;font-weight:700}
+.rt.goal{color:var(--text-2);font-size:13px}
+.up .rn{font-weight:600}
+.fine{color:var(--muted);font-size:12px;margin:12px 0 0}
+.pbx,.gx{display:inline-block;width:9px;height:9px;border-radius:50%;vertical-align:-1px;margin-left:4px}
+.pbx{background:var(--pb)}.gx{border:2px dashed var(--pb)}
+@media (max-width:480px){.rl li{grid-template-columns:1fr auto}.rl .rd{grid-column:1/-1}
+ .rd em{display:inline;margin-left:8px}}
+.tabs{position:sticky;top:0;z-index:5;display:flex;gap:4px;padding:4px;margin:0 0 16px;
+ background:var(--card);border:1px solid var(--border);border-radius:12px}
+.tabs a{flex:1;text-align:center;padding:8px 10px;border-radius:9px;font-size:14px;font-weight:600;
+ color:var(--text-2);text-decoration:none;-webkit-tap-highlight-color:transparent}
+.tabs a[aria-selected="true"]{background:var(--text);color:var(--bg)}
+.js .panel{display:none}.js .panel.on{display:block}
 footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
 @media (max-width:480px){.mini b{font-size:16px}.kpi{padding:10px}.kpi b{font-size:18px;white-space:nowrap}.kpi span{font-size:12px}.kpis{gap:8px}}
 </style>
@@ -424,6 +681,12 @@ footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
 <main>
 <header><span class="brand">athlete<i>.</i>coach</span></header>
 
+<nav class="tabs" role="tablist">
+ <a href="#training" role="tab" data-tab="training" aria-selected="true">Training</a>
+ <a href="#wettkaempfe" role="tab" data-tab="wettkaempfe" aria-selected="false">Wettkämpfe</a>
+</nav>
+
+<div class="panel" id="p-training" data-panel="training">
 <section class="kpis">
  <div class="kpi"><b>{{TOTAL}} h</b><span>Training {{YEAR}}</span></div>
  <div class="kpi"><b>{{COUNT}}</b><span>Einheiten {{YEAR}}</span></div>
@@ -446,10 +709,33 @@ footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
  {{CHART}}
  <details><summary>Als Tabelle anzeigen</summary><div class="tw">{{TABLE}}</div></details>
 </section>
+</div>
+
+<div class="panel" id="p-wettkaempfe" data-panel="wettkaempfe">
+<section class="card">
+ <h2>Wettkämpfe</h2>
+ <p class="sub">Endzeiten je Disziplin – vergangene Rennen und geplante Starts</p>
+ {{R_NEXT}}
+ {{R_BLOCKS}}
+ {{R_NOTE}}
+</section>
+</div>
 
 <footer>Daten: Strava · aktualisiert {{BUILT}} Uhr</footer>
 </main>
 <div id="tip"></div>
+<script>
+(function(){
+var tabs=document.querySelectorAll('.tabs a'),ids=[].map.call(tabs,function(a){return a.dataset.tab;});
+function show(id,scroll){if(ids.indexOf(id)<0)id=ids[0];
+ tabs.forEach(function(a){a.setAttribute('aria-selected',a.dataset.tab===id?'true':'false');});
+ document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.dataset.panel===id);});
+ if(scroll)window.scrollTo(0,0);}
+tabs.forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();
+ history.replaceState(null,'','#'+a.dataset.tab);show(a.dataset.tab,true);});});
+window.addEventListener('hashchange',function(){show(location.hash.slice(1),true);});
+show(location.hash.slice(1),false);})();
+</script>
 <script id="cdata" type="application/json">{{C_DATA}}</script>
 <script>
 (function(){var t=document.getElementById('tip');
