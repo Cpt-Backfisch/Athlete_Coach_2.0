@@ -8,3 +8,5 @@ Persönliches Trainings-Dashboard (Triathlon / Laufen) auf Basis von Strava-Date
 - Die Daten werden gefiltert (nur Zahlen, keine Orte/Namen) und in diesem Repo gespeichert.
 - Ein Script baut daraus die Dashboard-Seite.
 - GitHub Pages veröffentlicht die Seite unter einem öffentlichen Link.
+
+Ausführlich: [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md)
