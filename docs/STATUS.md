@@ -1,0 +1,44 @@
+# Status & nächste Schritte
+
+> Zuletzt aktualisiert: 04.10.2026. Diese Datei am Ende jeder Arbeitssitzung aktualisieren
+> (was erledigt wurde, was als Nächstes kommt, neue Entscheidungen).
+
+## Aktueller Stand
+
+- ✅ Architektur entschieden und getestet → [`ARCHITEKTUR.md`](ARCHITEKTUR.md)
+- ✅ Daten 2026 importiert: 130 Aktivitäten (01.01.–03.10.2026) in `data/activities.json`
+- ✅ `scripts/ingest.py` (Datenschutz-Filter) und `scripts/build.py` (Seite bauen)
+- ✅ Erste Seite: KPI-Kacheln + **Testgrafik** „Trainingsstunden pro Monat 2026 nach Sportart"
+- ✅ Täglicher Task „athlete.coach Dashboard-Update", 21:59 Uhr, folgt [`UPDATE.md`](UPDATE.md)
+- ⏳ **GitHub Pages einschalten** (Sebastian, einmalig): Repo → Settings → Pages → Source *Deploy from a branch* → Branch `main`, Ordner `/ (root)` → Save.
+  Danach erreichbar unter `https://cpt-backfisch.github.io/Athlete_Coach_2.0/`
+- ⏳ Ersten automatischen Lauf (heute 21:59) am nächsten Tag prüfen: neuer Commit „Update …" von Claude im Repo?
+
+## Nächste Schritte (Vorschlag, Reihenfolge offen)
+
+1. **KPIs & Inhalte festlegen** – was soll die Seite zeigen? Ideen aus der alten App:
+   Wochenumfang/Wochenziel, Sportverteilung, Jahresvergleich (benötigt Daten 2024/2025 → Backfill),
+   Countdown zum nächsten Wettkampf, Lauf-km kumuliert, Verlauf langer Läufe.
+2. **Coach-Text** oben auf der Seite: ja/nein? (Der Task könnte 2–3 Sätze schreiben; wäre der einzige
+   Teil, den Claude statt des Scripts erzeugt – Regeln dafür vorher festlegen.)
+3. **Wettkämpfe** pflegen: z. B. `data/races.json` (manuell gepflegt) für Countdown/Ergebnisse.
+   Nächstes A-Rennen: Frankfurt Marathon 25.10.2026, Ziel 3:50.
+4. **Historische Daten** 2024/2025 nachladen (einmaliger Backfill über den Connector, gleicher Ablauf wie UPDATE.md mit früherem Startdatum).
+5. Optional: Icon/Logo für „Zum Home-Bildschirm".
+
+## Bekannte Einschränkungen
+
+- Gelöschte Strava-Aktivitäten werden nicht automatisch entfernt (nur Hinzufügen/Aktualisieren).
+- Kein Echtzeit-Update: Seite ist max. ~1 Tag alt (oder manuell im Chat aktualisieren).
+- Indoor-Radfahrten haben in Strava oft Distanz 0 – für Stunden egal, für km-Auswertungen beachten.
+
+## Entscheidungs-Log
+
+| Datum | Entscheidung |
+|---|---|
+| 04.10.2026 | Neuaufbau als „App 2.0" in neuem Repo; alte App (`athlete-coach`) bleibt unangetastet |
+| 04.10.2026 | Datenquelle Strava-Connector via Claude-Task, keine Strava-API, kein Server, keine DB |
+| 04.10.2026 | Hosting GitHub Pages, öffentlich ohne Login; Repo inkl. gefilterter Rohdaten öffentlich |
+| 04.10.2026 | Öffentliche Anzeige der Strava-Daten von Sebastian geprüft und freigegeben |
+| 04.10.2026 | Task täglich 21:59 Uhr, pusht ohne Rückfrage direkt auf `main` |
+| 04.10.2026 | Python-Standardbibliothek only; statisches HTML ohne externe Ressourcen |

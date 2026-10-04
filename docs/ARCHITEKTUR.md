@@ -1,6 +1,6 @@
 # Athlete Coach 2.0 – Architektur
 
-> Stand: 04.10.2026 · Status: **in Planung** – Grundsatzentscheidungen getroffen, technische Machbarkeit vollständig getestet, noch nichts gebaut außer dieser Doku.
+> Stand: 04.10.2026 · Status: **erste Version gebaut** (Testgrafik), täglicher Task eingerichtet. Aktueller Arbeitsstand: [`STATUS.md`](STATUS.md).
 > Diese Datei ist die maßgebliche Beschreibung der Architektur. Bei Änderungen hier zuerst anpassen.
 
 ---
@@ -19,17 +19,19 @@ flowchart LR
         CH["Chat<br/>manuell: 'aktualisier mein Dashboard'"]
     end
     subgraph G["🐙 GitHub – Repo Athlete_Coach_2.0 (öffentlich)"]
+        I["scripts/ingest.py<br/>(Datenschutz-Filter)"]
         D["data/activities.json<br/>(nur Zahlen)"]
-        B["Build-Script"]
-        W["Webseite<br/>(HTML)"]
+        B["scripts/build.py"]
+        W["index.html"]
     end
     P["🌐 GitHub Pages<br/>öffentlicher Link"]
     U["📱 Du & Freunde<br/>Browser, kein Login"]
 
     S -- "Strava-Connector<br/>(nur lesen)" --> T
     S -- "Strava-Connector" --> CH
-    T -- "filtern + push" --> D
-    CH -. "alternativ" .-> D
+    T -- "Rohdaten" --> I
+    CH -. "alternativ" .-> I
+    I --> D
     D --> B --> W
     W -- "automatisch veröffentlicht" --> P
     P --> U
@@ -56,11 +58,11 @@ flowchart LR
 ## 3. Informationsfluss Schritt für Schritt
 
 1. **Du trainierst.** Die Aktivität landet wie gewohnt in Strava.
-2. **Der Task startet** (geplant, z. B. täglich abends).
-3. Er fragt über den Strava-Connector: *„Welche Aktivitäten gibt es seit dem letzten Lauf?"* – es werden nur **neue** geholt.
-4. **Filter:** Pro Aktivität werden nur Zahlen gespeichert (Datum, Sportart, Distanz, Zeit, Höhenmeter, ggf. Puls). **Nicht** gespeichert: Ortsangaben, GPS-Strecken, Aktivitätsnamen, Beschreibungen. *(Genaue Feldliste wird mit den KPIs festgelegt.)*
-5. Die neuen Einträge werden an `data/activities.json` angehängt.
-6. Das **Build-Script** erzeugt die aktualisierte Webseite.
+2. **Der Task startet** – täglich gegen **22 Uhr** (genau: 21:59 Uhr Berlin).
+3. Er fragt über den Strava-Connector alle Aktivitäten der **letzten 14 Tage vor der neuesten gespeicherten Aktivität** ab. Die Überlappung fängt auch nachträglich hochgeladene oder bearbeitete Einheiten ab; Doppelte werden erkannt.
+4. **Filter** (`scripts/ingest.py`, festes Script – nicht Claude entscheidet): gespeichert werden nur Startzeit (lokal), Sportart, Distanz, Bewegungs- und Gesamtzeit, Höhenmeter. **Nicht** gespeichert: Strava-ID, Ortsangaben, GPS-Strecken, Aktivitätsnamen, Beschreibungen, Kudos. Neue Felder kommen nur durch eine bewusste Änderung an `KEEP` im Script dazu.
+5. Neue Einträge landen in `data/activities.json`, Duplikate (gleiche Startzeit) werden überschrieben statt doppelt gespeichert.
+6. Das **Build-Script** (`scripts/build.py`) rechnet alle Kennzahlen und erzeugt `index.html`.
 7. Der Task **committet und pusht** direkt auf `main`.
 8. **GitHub Pages** veröffentlicht die neue Version automatisch (dauert meist 1–2 Minuten).
 9. Wer den Link öffnet, sieht den neuen Stand.
@@ -71,8 +73,10 @@ flowchart LR
 
 | Weg | Wann | Aufwand |
 |---|---|---|
-| **Automatisch** (Claude-Task) | nach Zeitplan, mind. 1× täglich (mehrmals möglich) | keiner |
+| **Automatisch** (Claude-Task) | täglich ca. 22 Uhr | keiner |
 | **Manuell im Chat** | jederzeit, z. B. direkt nach einem Wettkampf | ein Satz im Chat |
+
+Beide Wege folgen derselben Schritt-für-Schritt-Anleitung: [`UPDATE.md`](UPDATE.md). Der Task-Prompt verweist nur auf diese Datei – Änderungen am Ablauf passieren also im Repo, nicht in den Task-Einstellungen.
 
 **Was passiert, wenn ein Lauf ausfällt?** (Connector antwortet nicht, Claude-Kontingent erschöpft, …) Nichts geht verloren: Der nächste Lauf holt alles seit dem **letzten erfolgreichen** Lauf nach. Die Seite ist dann nur einen Tag älter.
 
@@ -99,7 +103,8 @@ flowchart LR
 ## 6. Wie sehe ich das Dashboard? Wo liegt es? Wie sehen es Freunde?
 
 - **Gehostet:** bei GitHub Pages, kostenlos.
-- **Adresse (geplant):** `https://cpt-backfisch.github.io/Athlete_Coach_2.0/` – wird aktiv, sobald GitHub Pages eingeschaltet und die erste Seite gebaut ist.
+- **Adresse:** `https://cpt-backfisch.github.io/Athlete_Coach_2.0/` – aktiv, sobald GitHub Pages eingeschaltet ist (Settings → Pages → *Deploy from a branch* → `main` / `/ (root)`).
+- **Technik:** eine einzige, statische HTML-Datei ohne externe Skripte oder Bibliotheken; Diagramme als SVG direkt vom Build-Script erzeugt. `.nojekyll` schaltet GitHub-Pages-Verarbeitung ab, ausgeliefert wird 1:1.
 - **Du:** Link im Browser öffnen. Tipp fürs iPhone: in Safari „Zum Home-Bildschirm" → wirkt wie eine App.
 - **Freunde:** Du schickst ihnen den Link (z. B. per WhatsApp). Kein Konto, kein Login, keine App nötig.
 - **Coaching-Fragen** („Wie war mein langer Lauf?", „Bin ich auf Kurs?") stellst du weiterhin direkt im Claude-Chat – dort hat Claude über den Connector Zugriff auf alle Details.
@@ -139,6 +144,10 @@ Weil Daten, Script und Seite unabhängig von Claude sind, muss im Ernstfall nur 
 - Task pusht ohne Rückfrage direkt auf `main`
 - Update mindestens 1× täglich, manuell jederzeit im Chat
 - Kein GitHub-Actions-Workflow nötig (Pages liefert direkt aus dem Repo aus)
+- **Öffentliche Anzeige der Strava-Daten:** von Sebastian geprüft und freigegeben (04.10.2026). Kein offener Punkt mehr.
+- Task-Zeit: täglich 21:59 Uhr (Europe/Berlin)
+- Nur Python-Standardbibliothek, keine Abhängigkeiten; Seite ohne externe Ressourcen
+- Datenschutz-Filter als Code (`ingest.py`), Duplikat-Schlüssel = lokale Startzeit, keine Strava-ID im Repo
 
 **Getestet**
 - ✅ Geplanter Task kann Strava-Daten abrufen (04.10.2026, ohne Rückfragen)
@@ -146,9 +155,4 @@ Weil Daten, Script und Seite unabhängig von Claude sind, muss im Ernstfall nur 
 - ✅ Geplanter Task: Strava-Abruf **und** Push auf `main` in einem Lauf, ohne Rückfragen, Dauer ca. 30 Sekunden (04.10.2026)
 - Hinweis aus dem Test: Das Repo ist in der Task-Sitzung bereits automatisch geklont. Der Task-Prompt soll das vorhandene Repo nutzen und nur falls es fehlt selbst klonen.
 
-**Offen**
-- Welche KPIs und Diagramme? → bestimmt auch die genaue Feldliste im Filter
-- Coach-Text auf der Seite: ja/nein
-- Strava-Nutzungsbedingungen: Ist die öffentliche Anzeige (aggregierter) Connector-Daten erlaubt? → vor Go-live prüfen
-- Genaue Uhrzeit(en) des täglichen Tasks
-- Ordnerstruktur und Technik der Seite (bewusst einfach halten)
+**Offen** → siehe [`STATUS.md`](STATUS.md)
