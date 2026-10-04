@@ -15,6 +15,7 @@ Datenbank, keine API-Schlüssel.
 | Seite/Diagramme ändern oder erweitern | `docs/DESIGN.md` + `scripts/build.py` |
 | Nicos km für die 1000-km-Challenge eintragen | `docs/CHALLENGE.md` |
 | Coaching, Ziele, Wettkampfzeiten, Leistungswerte | `docs/ATHLETENPROFIL.md` |
+| Wettkampf/Ergebnis/Zielzeit fürs Dashboard eintragen | `data/races.json` (Format im Feld `_info`; Zeiten wie im Athletenprofil) |
 
 ## Struktur
 
@@ -24,6 +25,7 @@ index.html              GENERIERT von scripts/build.py – nie von Hand bearbeit
 .nojekyll               GitHub Pages liefert Dateien 1:1 aus
 data/activities.json    gefilterte Aktivitäten (eine pro Zeile), öffentlich
 data/challenge.json     1000-km-Challenge: Ziel + Nicos km-Stände (von Hand gepflegt)
+data/races.json         Wettkämpfe: Ergebnisse + geplante Starts mit Zielzeit (von Hand gepflegt)
 scripts/ingest.py       Strava-Antwort(en) → data/activities.json (Datenschutz-Filter, Duplikate)
 scripts/build.py        data/activities.json → index.html (alle Berechnungen, SVG-Diagramme)
 docs/                   Doku (STATUS, ARCHITEKTUR, UPDATE, DESIGN, CHALLENGE, ATHLETENPROFIL)
