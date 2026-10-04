@@ -510,6 +510,128 @@ def table_html(rows: list, last_month: int) -> str:
             f"<td><b>{fmt_h(sum(sums))}</b></td></tr></tfoot></table>")
 
 
+# ---------------------------------------------------------------- Woche
+
+SPORT_DE = {
+    "Run": "Lauf", "TrailRun": "Traillauf", "VirtualRun": "Laufband",
+    "Ride": "Rad", "VirtualRide": "Rolle", "GravelRide": "Gravel", "MountainBikeRide": "MTB",
+    "EBikeRide": "E-Bike", "EMountainBikeRide": "E-MTB", "Swim": "Schwimmen",
+    "Hike": "Wandern", "Walk": "Gehen", "Workout": "Workout", "WeightTraining": "Krafttraining",
+    "Yoga": "Yoga", "Squash": "Squash",
+}
+WEEKDAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+
+
+def fmt_dur(sec: int) -> str:
+    """3725 -> '1:02 h', 2738 -> '46 min'."""
+    m = round(sec / 60)
+    return f"{m // 60}:{m % 60:02d} h" if m >= 60 else f"{m} min"
+
+
+def fmt_clock(sec: int) -> str:
+    """3725 -> '1:02:05', 2738 -> '45:38'."""
+    h, r = divmod(int(sec), 3600)
+    m, s = divmod(r, 60)
+    return f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
+
+
+def fmt_dist(a: dict) -> str:
+    d = a.get("distance_m") or 0
+    if d <= 0:
+        return "–"
+    if a["sport_type"] == "Swim":
+        return f"{round(d):,} m".replace(",", ".")
+    return f"{d / 1000:.1f} km".replace(".", ",")
+
+
+def tempo(a: dict) -> tuple:
+    """(Bezeichnung, Wert) passend zur Sportart, oder None ohne Distanz."""
+    d, t = a.get("distance_m") or 0, a.get("moving_time_s") or 0
+    if d <= 0 or t <= 0:
+        return None
+    cat = category(a["sport_type"])
+    if a["sport_type"] == "Swim":
+        p = round(t / (d / 100))
+        return ("Pace", f"{p // 60}:{p % 60:02d} /100 m")
+    if cat == "bike":
+        return ("Ø Tempo", f"{d / t * 3.6:.1f} km/h".replace(".", ","))
+    if cat in ("run", "hike"):
+        p = round(t / (d / 1000))
+        return ("Pace", f"{p // 60}:{p % 60:02d} /km")
+    return None
+
+
+def sport_name(a: dict) -> str:
+    n = SPORT_DE.get(a["sport_type"], a["sport_type"])
+    if category(a["sport_type"]) == "bike" and not (a.get("distance_m") or 0) > 0:
+        n += " (indoor)"
+    return n
+
+
+def week_acts(acts: list, monday) -> list:
+    from datetime import timedelta
+    end = monday + timedelta(days=7)
+    return [a for a in acts if monday <= datetime.fromisoformat(a["start_local"]).date() < end]
+
+
+def week_html(acts: list, today) -> str:
+    """Karte „Diese Woche": Summen + aufklappbare Liste der Einheiten (Mo–So)."""
+    from datetime import timedelta
+    mon = today - timedelta(days=today.weekday())
+    sun = mon + timedelta(days=6)
+    wk = sorted(week_acts(acts, mon), key=lambda a: a["start_local"])
+    prev = week_acts(acts, mon - timedelta(days=7))
+    t_wk = sum(a.get("moving_time_s") or 0 for a in wk)
+    t_prev = sum(a.get("moving_time_s") or 0 for a in prev)
+    run_km = sum((a.get("distance_m") or 0) for a in wk if category(a["sport_type"]) == "run") / 1000
+    run_prev = sum((a.get("distance_m") or 0) for a in prev if category(a["sport_type"]) == "run") / 1000
+    kw = mon.isocalendar()[1]
+    head = (f'<h2>Diese Woche</h2><p class="sub">KW {kw} · {mon:%d.%m.} – {sun:%d.%m.%Y}</p>'
+            f'<div class="mini">'
+            f'<div><b>{len(wk)}</b><span>Einheiten</span><em>Vorwoche {len(prev)}</em></div>'
+            f'<div><b>{fmt_dur(t_wk)}</b><span>Bewegungszeit</span><em>Vorwoche {fmt_dur(t_prev)}</em></div>'
+            f'<div><b>{f"{run_km:.1f}".replace(".", ",")} km</b><span>Laufen</span>'
+            f'<em>Vorwoche {f"{run_prev:.1f}".replace(".", ",")} km</em></div></div>')
+    if not wk:
+        return head + '<p class="note wk-empty">Noch keine Einheit in dieser Woche.</p>'
+    # Zeitanteil je Sportart als dünner Balken
+    split = []
+    for k, label, _ in CATEGORIES:
+        sec = sum(a.get("moving_time_s") or 0 for a in wk if category(a["sport_type"]) == k)
+        if sec:
+            split.append((k, label, sec))
+    bar = "".join(f'<span class="s-{k}" style="flex:{sec}" data-tip="{label} {fmt_dur(sec)}"></span>'
+                  for k, label, sec in split)
+    keys = " · ".join(f'<span class="sw s-{k}"></span>{label} {fmt_dur(sec)}' for k, label, sec in split)
+    items = []
+    for a in wk:
+        d = datetime.fromisoformat(a["start_local"])
+        k = category(a["sport_type"])
+        mv, el = a.get("moving_time_s") or 0, a.get("elapsed_time_s") or 0
+        rows = [("Start", f"{d:%H:%M} Uhr"), ("Bewegungszeit", fmt_clock(mv))]
+        if el > mv:
+            rows.append(("Gesamtzeit", f"{fmt_clock(el)} <i>(Pause {fmt_clock(el - mv)})</i>"))
+        if (a.get("distance_m") or 0) > 0:
+            rows.append(("Distanz", fmt_dist(a)))
+        tp = tempo(a)
+        if tp:
+            rows.append(tp)
+        if (a.get("elevation_gain_m") or 0) > 0:
+            rows.append(("Höhenmeter", f"{round(a['elevation_gain_m'])} m"))
+        if t_wk:
+            rows.append(("Anteil Woche", f"{round(mv / t_wk * 100)} %"))
+        dl = "".join(f"<dt>{lbl}</dt><dd>{val}</dd>" for lbl, val in rows)
+        items.append(
+            f'<li><details class="wa"><summary>'
+            f'<span class="wd">{WEEKDAYS[d.weekday()]} {d:%d.%m.}</span>'
+            f'<span class="ws"><span class="sw s-{k}"></span>{html.escape(sport_name(a))}</span>'
+            f'<span class="wv">{fmt_dist(a)}</span><span class="wv">{fmt_dur(mv)}</span>'
+            f'</summary><dl>{dl}</dl></details></li>')
+    return (head + f'<div class="wbar">{bar}</div><p class="wkeys">{keys}</p>'
+            f'<ul class="wl">{"".join(items)}</ul>'
+            '<p class="fine">Tippen für Details. Woche Mo–So, Zeiten = Bewegungszeit.</p>')
+
+
 def main() -> None:
     store = json.loads(DATA.read_text(encoding="utf-8"))
     acts = store["activities"]
@@ -544,6 +666,7 @@ def main() -> None:
         "{{CHART}}": stacked_bar_svg(rows, last_month)
         + stacked_bar_svg(rows, last_month, W=360, H=280, cls="narrow"),
         "{{TABLE}}": table_html(rows, last_month),
+        "{{WEEK}}": week_html(acts, now.date()),
         "{{C_YEAR}}": str(cs["year"]),
         "{{C_GOAL}}": fmt_km(cs["goal"]),
         "{{C_PARTNER}}": pname,
@@ -667,6 +790,27 @@ h3{font-size:15px;margin:0}
 .pbx{background:var(--pb)}.gx{border:2px dashed var(--pb)}
 @media (max-width:480px){.rl li{grid-template-columns:1fr auto}.rl .rd{grid-column:1/-1}
  .rd em{display:inline;margin-left:8px}}
+.wbar{display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden;margin:8px 0 6px}
+.wkeys{color:var(--text-2);font-size:12px;margin:0 0 6px;font-variant-numeric:tabular-nums}
+.wkeys .sw{margin:0 4px 0 2px}
+.wl{list-style:none;margin:0;padding:0;font-variant-numeric:tabular-nums}
+.wl li{border-bottom:1px solid var(--border)}.wl li:last-child{border-bottom:0}
+.wa{margin:0;font-size:14px}
+.wa summary{display:grid;grid-template-columns:62px 1fr auto 62px 10px;gap:10px;align-items:center;
+ padding:9px 0;color:var(--text);list-style:none;-webkit-tap-highlight-color:transparent}
+.wa summary::-webkit-details-marker{display:none}
+.wa summary::after{content:"›";grid-column:5;color:var(--muted);font-size:18px;line-height:1;
+ text-align:center;transform:rotate(90deg);transition:transform .15s}
+.wa[open] summary::after{transform:rotate(-90deg)}
+.mini em{display:block;font-style:normal;color:var(--muted);font-size:12px;white-space:nowrap}
+@media (max-width:480px){.mini em{font-size:11px}}
+.wd{color:var(--text-2);font-size:13px;white-space:nowrap}.ws{display:flex;align-items:center;gap:8px;font-weight:600;min-width:0}
+.wv{text-align:right;white-space:nowrap}
+.wa dl{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;margin:0 0 12px 72px;font-size:13px}
+.wa dt{color:var(--text-2)}.wa dd{margin:0;text-align:right}.wa dd i{font-style:normal;color:var(--muted)}
+@media (max-width:480px){.wa summary{grid-template-columns:62px 1fr auto auto 10px;gap:8px}
+ .ws{gap:6px}
+ .wa dl{margin-left:0;padding:4px 10px 0;border-left:2px solid var(--border)}}
 .tabs{position:sticky;top:0;z-index:5;display:flex;gap:4px;padding:4px;margin:0 0 16px;
  background:var(--card);border:1px solid var(--border);border-radius:12px}
 .tabs a{flex:1;text-align:center;padding:8px 10px;border-radius:9px;font-size:14px;font-weight:600;
@@ -692,6 +836,10 @@ footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
  <div class="kpi"><b>{{TOTAL}} h</b><span>Training {{YEAR}}</span></div>
  <div class="kpi"><b>{{COUNT}}</b><span>Einheiten {{YEAR}}</span></div>
  <div class="kpi"><b>{{LATEST}}</b><span>letzte Einheit</span></div>
+</section>
+
+<section class="card">
+ {{WEEK}}
 </section>
 
 <section class="card">

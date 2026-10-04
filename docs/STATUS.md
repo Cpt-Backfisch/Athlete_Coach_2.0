@@ -11,6 +11,8 @@
 - ✅ Erste Seite: KPI-Kacheln + **Testgrafik** „Trainingsstunden pro Monat 2026 nach Sportart"
 - ✅ **1000-km-Challenge 2026** mit Nico (Chef): kumulierte Lauf-km, lineare Soll-Linie, Nicos Linie,
   Stand/Soll/Differenz und nötige km pro Woche. Nicos Stände pflegt Sebastian per Chat → [`CHALLENGE.md`](CHALLENGE.md)
+- 🔍 **„Diese Woche"** im Tab Training (über der Monatsgrafik): Wochensummen mit Vorwochenvergleich und
+  aufklappbare Liste aller Einheiten – auf Branch `woche`, wartet auf Sebastians OK
 - ✅ **Menü-Tabs** „Training", „Wettkämpfe", „Challenges" (eine Seite, Umschalten per Tab, Link-Anker `#training`, `#wettkaempfe`, `#challenges`)
 - ✅ **Wettkämpfe-Tab**: alle Rennen seit 2015 und geplante Starts je Disziplin, Bestzeit hervorgehoben, Countdown in Wochen.
   Daten in `data/races.json` (offizielle Zeiten aus dem Athletenprofil; nur Eschborn–Frankfurt 2026 laut Uhr)
@@ -54,4 +56,5 @@
 | 04.10.2026 | Wettkämpfe in `data/races.json` von Hand gepflegt (Strava markiert Rennen nicht verlässlich). Rennnamen öffentlich; Patrick-Vergleich nicht auf der Seite. Marathon 2015 bleibt drin |
 | 04.10.2026 | Athletenprofil (`docs/ATHLETENPROFIL.md`) darf im öffentlichen Repo liegen – von Sebastian bestätigt |
 | 04.10.2026 | Seite in Tabs „Training" / „Wettkämpfe" / „Challenges" aufgeteilt, damit man nicht ewig scrollt; 1000-km-Challenge liegt unter „Challenges" |
+| 04.10.2026 | „Diese Woche": Woche Mo–So zum Build-Datum; Details nur aus vorhandenen Feldern (keine neuen Strava-Felder) |
 | 04.10.2026 | Nicos Daten manuell (`data/challenge.json`), weil der Strava-Connector nur Sebastians Konto liest |
