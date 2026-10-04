@@ -54,6 +54,6 @@ Die Zuordnung steht im Code in `CATEGORIES` (`scripts/build.py`).
 
 ## Navigation (Tabs)
 
-- Eine Seite, oben ein klebender Umschalter mit Tabs („Training", „Wettkämpfe"). Aktiver Tab = gefüllt
+- Eine Seite, oben ein klebender Umschalter mit Tabs („Training", „Wettkämpfe", „Challenges"). Aktiver Tab = gefüllt
   in `--text`. Neue Bereiche bekommen einen eigenen Tab statt die Seite zu verlängern (max. ~4 Tabs fürs Handy).
-- Jeder Tab ist per Anker verlinkbar (`#training`, `#wettkaempfe`). Ohne JavaScript sind alle Bereiche untereinander sichtbar.
+- Jeder Tab ist per Anker verlinkbar (`#training`, `#wettkaempfe`, `#challenges`). Ohne JavaScript sind alle Bereiche untereinander sichtbar.

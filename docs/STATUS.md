@@ -11,7 +11,7 @@
 - ✅ Erste Seite: KPI-Kacheln + **Testgrafik** „Trainingsstunden pro Monat 2026 nach Sportart"
 - ✅ **1000-km-Challenge 2026** mit Nico (Chef): kumulierte Lauf-km, lineare Soll-Linie, Nicos Linie,
   Stand/Soll/Differenz und nötige km pro Woche. Nicos Stände pflegt Sebastian per Chat → [`CHALLENGE.md`](CHALLENGE.md)
-- ✅ **Menü-Tabs** „Training" und „Wettkämpfe" (eine Seite, Umschalten per Tab, Link-Anker `#wettkaempfe`)
+- ✅ **Menü-Tabs** „Training", „Wettkämpfe", „Challenges" (eine Seite, Umschalten per Tab, Link-Anker `#training`, `#wettkaempfe`, `#challenges`)
 - ✅ **Wettkämpfe-Tab**: alle Rennen seit 2015 und geplante Starts je Disziplin, Bestzeit hervorgehoben, Countdown in Wochen.
   Daten in `data/races.json` (offizielle Zeiten aus dem Athletenprofil; nur Eschborn–Frankfurt 2026 laut Uhr)
 - ⏳ Ersten Stand von Nico eintragen (bisher keine Daten → seine Linie ist noch ausgeblendet)
@@ -52,5 +52,5 @@
 | 04.10.2026 | Nico mit Namen und km öffentlich auf der Seite – mit Nico abgestimmt |
 | 04.10.2026 | Athletenprofil aus der Claude-App als `docs/ATHLETENPROFIL.md` ins Repo übernommen (ohne Marathon-Trainingsplan) |
 | 04.10.2026 | Wettkämpfe in `data/races.json` von Hand gepflegt (Strava markiert Rennen nicht verlässlich). Rennnamen öffentlich; Patrick-Vergleich nicht auf der Seite. Marathon 2015 bleibt drin |
-| 04.10.2026 | Seite in Tabs „Training" / „Wettkämpfe" aufgeteilt, damit man nicht ewig scrollt |
+| 04.10.2026 | Seite in Tabs „Training" / „Wettkämpfe" / „Challenges" aufgeteilt, damit man nicht ewig scrollt; 1000-km-Challenge liegt unter „Challenges" |
 | 04.10.2026 | Nicos Daten manuell (`data/challenge.json`), weil der Strava-Connector nur Sebastians Konto liest |
