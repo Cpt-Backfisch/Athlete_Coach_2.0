@@ -55,8 +55,6 @@ screenshotten (Chromium unter `/opt/pw-browsers/chromium`).
 - Bei langen Sitzungen vorschlagen, in einem neuen Chat weiterzumachen (Kontext = diese Dateien).
 
 ## Hintergrund (nur bei Bedarf)
-
-- Saison-Ziel: Frankfurt Marathon 25.10.2026, Ziel 3:50. Halbmarathon-Bestzeit 1:38:57 (03/2026).
 - Strava-Connector-Tools (nur lesen): `list_activities`, `get_activity_streams`, `get_activity_performance`,
   `get_athlete_zones`, `get_athlete_profile`, `get_gear`, `get_training_plan` u. a.
   Ein **geplanter Task** hat Zugriff auf Connector und Repo (getestet 04.10.2026).
