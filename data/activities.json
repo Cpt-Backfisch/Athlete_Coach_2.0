@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-04T16:25:12+02:00",
+ "updated_at": "2026-10-04T22:00:17+02:00",
  "activities": [
   {"start_local": "2026-01-01T12:48:01", "sport_type": "Hike", "distance_m": 4539.9, "moving_time_s": 3661, "elapsed_time_s": 4288, "elevation_gain_m": 103.0},
   {"start_local": "2026-01-02T15:45:02", "sport_type": "Hike", "distance_m": 10203.4, "moving_time_s": 8090, "elapsed_time_s": 8925, "elevation_gain_m": 881.0},
