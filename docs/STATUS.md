@@ -52,5 +52,6 @@
 | 04.10.2026 | Nico mit Namen und km öffentlich auf der Seite – mit Nico abgestimmt |
 | 04.10.2026 | Athletenprofil aus der Claude-App als `docs/ATHLETENPROFIL.md` ins Repo übernommen (ohne Marathon-Trainingsplan) |
 | 04.10.2026 | Wettkämpfe in `data/races.json` von Hand gepflegt (Strava markiert Rennen nicht verlässlich). Rennnamen öffentlich; Patrick-Vergleich nicht auf der Seite. Marathon 2015 bleibt drin |
+| 04.10.2026 | Athletenprofil (`docs/ATHLETENPROFIL.md`) darf im öffentlichen Repo liegen – von Sebastian bestätigt |
 | 04.10.2026 | Seite in Tabs „Training" / „Wettkämpfe" / „Challenges" aufgeteilt, damit man nicht ewig scrollt; 1000-km-Challenge liegt unter „Challenges" |
 | 04.10.2026 | Nicos Daten manuell (`data/challenge.json`), weil der Strava-Connector nur Sebastians Konto liest |
