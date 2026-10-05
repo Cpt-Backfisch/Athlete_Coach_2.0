@@ -102,6 +102,149 @@ def stacked_bar_svg(rows: list, last_month: int, W: int = 720, H: int = 320, cls
 
 
 # ---------------------------------------------------------------------------
+# Jahresvergleich: kumulierte Trainingsstunden je Kalenderjahr (eine Linie pro Jahr)
+# ---------------------------------------------------------------------------
+CUM_FILTERS = [("all", "Gesamt"), ("run", "Laufen"), ("bike", "Rad"), ("swim", "Schwimmen")]
+
+
+def cum_series(acts: list, today) -> dict:
+    """{filter: {jahr: [kumulierte Stunden am Tagesende, bis heute bzw. 31.12.]}}."""
+    years = sorted({int(a["start_local"][:4]) for a in acts if a.get("moving_time_s")})
+    out = {f: {} for f, _ in CUM_FILTERS}
+    for yr in years:
+        if yr > today.year:
+            continue
+        jan1 = date(yr, 1, 1)
+        ndays = (date(yr + 1, 1, 1) - jan1).days
+        end = (today - jan1).days if yr == today.year else ndays - 1
+        per = {f: [0.0] * ndays for f, _ in CUM_FILTERS}
+        for a in acts:
+            d = datetime.fromisoformat(a["start_local"]).date()
+            if d.year != yr or not a.get("moving_time_s"):
+                continue
+            h = a["moving_time_s"] / 3600
+            per["all"][(d - jan1).days] += h
+            c = category(a["sport_type"])
+            if c in per:
+                per[c][(d - jan1).days] += h
+        for f, _ in CUM_FILTERS:
+            run, s = 0.0, []
+            for i in range(end + 1):
+                run += per[f][i]
+                s.append(round(run, 2))
+            out[f][yr] = s
+    return out
+
+
+def year_len(yr: int) -> int:
+    return (date(yr + 1, 1, 1) - date(yr, 1, 1)).days
+
+
+def cum_svg(series: dict, f: str, cur_year: int, W: int = 720, H: int = 320, cls: str = "wide") -> str:
+    """Liniendiagramm Jan–Dez, eine Linie pro Jahr. Aktuelles Jahr in Sportfarbe (Gesamt: --text),
+    Vorjahre neutral; Endwerte direkt beschriftet, Fadenkreuz per Script."""
+    L, R, T, B = (40, 76, 16, 28) if W > 500 else (32, 46, 16, 26)
+    pw, ph = W - L - R, H - T - B
+    ys = sorted(series)
+    top = max([v for yr in ys for v in series[yr][-1:]] + [1])
+    step = next(s for s in (5, 10, 20, 25, 50, 100, 200, 250, 500) if top / s <= 5)
+    top = -(-top // step) * step
+    y = lambda v: T + ph - v / top * ph
+    ref = cur_year if cur_year in ys else (ys[-1] if ys else cur_year)
+    nref = year_len(ref)
+    x = lambda i, n: L + (i + 1) / n * pw
+    parts = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-labelledby="c3t" class="chart {cls} cy{' sel' if f == 'all' else ''}" '
+             f'data-f="{f}" data-l="{L}" data-pw="{pw}" data-w="{W}">']
+    for v in range(0, int(top) + 1, step):
+        parts.append(f'<line class="grid" x1="{L}" x2="{L+pw}" y1="{y(v):.1f}" y2="{y(v):.1f}"/>'
+                     f'<text class="tick" x="{L-6}" y="{y(v)+4:.1f}" text-anchor="end">{v}</text>')
+    for m in range(12):
+        a, b = month_span(ref, m)
+        if m > 0:
+            parts.append(f'<line class="mtick" x1="{x(a-1, nref):.1f}" x2="{x(a-1, nref):.1f}" '
+                         f'y1="{y(0):.1f}" y2="{y(0)+4:.1f}"/>')
+        if W > 500 or m % 2 == 0:
+            parts.append(f'<text class="tick" x="{(x(a-1, nref)+x(b-1, nref))/2:.1f}" y="{H-8}" '
+                         f'text-anchor="middle">{MONTHS[m]}</text>')
+    parts.append(f'<line class="axis" x1="{L}" x2="{L+pw}" y1="{y(0):.1f}" y2="{y(0):.1f}"/>')
+    # Vorjahre zuerst (darunter), aktuelles Jahr zuletzt (obenauf)
+    order = [yr for yr in ys if yr != cur_year] + ([cur_year] if cur_year in ys else [])
+    ends = []
+    for yr in order:
+        s, n = series[yr], year_len(yr)
+        if not s:
+            continue
+        cur = yr == cur_year
+        age = cur_year - yr
+        klass = f"cl cl-{f}" if cur else f"cl cl-old o{min(age, 3)}"
+        d = f"M{L},{y(0):.1f} " + " ".join(f"L{x(i, n):.1f},{y(v):.1f}" for i, v in enumerate(s))
+        parts.append(f'<path class="{klass}" d="{d}"/>')
+        ends.append((yr, cur, x(len(s) - 1, n), y(s[-1]), s[-1]))
+    # Beschriftungen rechts: Vorjahre am rechten Rand, aktuelles Jahr direkt neben dem Endpunkt
+    # Schmal: zweizeilig (Jahr / Wert), damit es in den rechten Rand passt
+    two = W <= 500
+    gap = 28 if two else 14
+    placed = []
+    for yr, cur, ex, ey, v in sorted(ends, key=lambda e: e[3]):
+        ty = ey + (0 if two else 4)
+        for p in placed:  # Mindestabstand zu bereits gesetzten Labels mit ähnlichem x
+            if abs(p[0] - (ex + 8)) < 70 and abs(ty - p[1]) < gap:
+                ty = p[1] + gap
+        placed.append((ex + 8, ty))
+        if cur:
+            parts.append(f'<circle class="dot cd-{f}" cx="{ex:.1f}" cy="{ey:.1f}" r="4.5"/>')
+        val = f"{fmt_h(v) if v < 100 else round(v)} h"
+        lx = ex + 8
+        body = (f'<tspan x="{lx:.1f}">{yr}</tspan><tspan x="{lx:.1f}" dy="13">{val}</tspan>' if two
+                else f"{yr} · {val}")
+        parts.append(f'<text class="lbl{"" if cur else " old"}" x="{lx:.1f}" y="{ty:.1f}">{body}</text>')
+    parts.append(f'<line class="xh" x1="0" x2="0" y1="{T}" y2="{y(0):.1f}"/>')
+    parts.append(f'<rect class="xhit" x="{L}" y="{T}" width="{pw}" height="{ph}"/>')
+    parts.append("</svg>")
+    return "".join(parts)
+
+
+def cum_table(series: dict, f: str) -> str:
+    ys = sorted(series, reverse=True)
+    head = "".join(f"<th>{yr}</th>" for yr in ys)
+    body = []
+    for m in range(12):
+        cells, any_val = [], False
+        for yr in ys:
+            s = series[yr]
+            last = month_span(yr, m)[1] - 1
+            if month_span(yr, m)[0] < len(s):
+                cells.append(f"<td>{fmt_h(s[min(last, len(s) - 1)])}</td>")
+                any_val = True
+            else:
+                cells.append("<td>–</td>")
+        if any_val:
+            body.append(f"<tr><th>{MONTHS[m]}</th>{''.join(cells)}</tr>")
+    return (f'<table data-f="{f}" class="ct{' sel' if f == 'all' else ''}"><thead><tr><th>Monatsende, h</th>{head}</tr></thead>'
+            f"<tbody>{''.join(body)}</tbody></table>")
+
+
+def cum_html(acts: list, today) -> str:
+    data = cum_series(acts, today)
+    cur = today.year
+    btns = "".join(f'<button type="button" data-f="{f}" aria-pressed="{"true" if f == "all" else "false"}">'
+                   f'{label}</button>' for f, label in CUM_FILTERS)
+    charts = "".join(cum_svg(data[f], f, cur) + cum_svg(data[f], f, cur, W=360, H=280, cls="narrow")
+                     for f, _ in CUM_FILTERS)
+    tables = "".join(cum_table(data[f], f) for f, _ in CUM_FILTERS)
+    nyears = len(data["all"])
+    hint = ("" if nyears > 1 else
+            '<p class="fine">Bisher liegen nur Daten für dieses Jahr vor – Vorjahres-Linien erscheinen '
+            'nach dem Import älterer Strava-Daten.</p>')
+    js = json.dumps({f: {str(k): v for k, v in data[f].items()} for f, _ in CUM_FILTERS},
+                    separators=(",", ":")).replace("</", "<\\/")
+    return (f'<div class="seg-f" role="group" aria-label="Sportart">{btns}</div>'
+            f'<div class="cyw">{charts}</div>'
+            f'<details><summary>Als Tabelle anzeigen</summary><div class="tw">{tables}</div></details>'
+            f'{hint}<script id="ydata" type="application/json">{js}</script>')
+
+
+# ---------------------------------------------------------------------------
 # 1000-km-Lauf-Challenge (kumulierte Lauf-km, Soll-Linie, optional Partner)
 # ---------------------------------------------------------------------------
 CHALLENGE = ROOT / "data" / "challenge.json"
@@ -370,7 +513,7 @@ def race_span(v: dict, today) -> tuple:
 
 def race_svg(v: dict, span: tuple, today, W: int = 720, H: int = 132, cls: str = "wide") -> str:
     """Zeitstrahl einer Disziplin: Ergebnisse (Punkte), Bestzeit (PB), Zielzeiten (Ring, gestrichelt).
-    y-Achse: schneller = weiter oben."""
+    y-Achse: schneller = weiter unten (wie eine normale Zeitachse)."""
     pts = [(r["date"], r["result"]) for r in v["past"]]
     tgts = [(r["date"], r["target"]) for r in v["future"] if r.get("target")]
     times = [t for _, t in pts + tgts]
@@ -383,7 +526,7 @@ def race_svg(v: dict, span: tuple, today, W: int = 720, H: int = 132, cls: str =
     t0, t1 = span
     days = (t1 - t0).days
     x = lambda d: L + (d - t0).days / days * pw
-    y = lambda t: T + (t - lo) / (hi - lo) * ph          # schneller (kleiner) = oben
+    y = lambda t: T + ph - (t - lo) / (hi - lo) * ph     # schneller (kleiner) = unten
 
     parts = [f'<svg viewBox="0 0 {W} {H}" role="img" class="chart {cls} rc">']
     first = -(-int(lo) // step) * step
@@ -436,7 +579,7 @@ def race_svg(v: dict, span: tuple, today, W: int = 720, H: int = 132, cls: str =
 
 def races_html(rd: dict, today) -> str:
     if not rd:
-        return '<p class="sub">Noch keine Wettkämpfe eingetragen.</p>'
+        return '<section class="card"><p class="sub">Noch keine Wettkämpfe eingetragen.</p></section>'
     blocks = []
     for key, _ in DISCIPLINES:
         if key not in rd:
@@ -471,8 +614,13 @@ def races_html(rd: dict, today) -> str:
             rows.append(f'<li><span class="rd">{fmt_date(r["date"])}</span>'
                         f'<span class="rn">{html.escape(r["name"])}</span>'
                         f'<span class="rt"><b>{fmt_hms(r["result"])}</b>{extra}</span></li>')
-        blocks.append(f'<div class="disc"><div class="dh"><h3>{v["label"]}</h3>{badge}</div>'
-                      f'{chart}<ul class="rl">{"".join(rows)}</ul></div>')
+        n_past, n_fut = len(v["past"]), len(v["future"])
+        meta = " · ".join(x for x in (
+            f'{n_past} Rennen' if n_past else "",
+            f'{n_fut} geplant' if n_fut else "") if x)
+        blocks.append(f'<section class="card disc" id="d-{key}"><div class="dh"><div><h3>{v["label"]}</h3>'
+                      f'<p class="dm">{meta}</p></div>{badge}</div>'
+                      f'{chart}<ul class="rl">{"".join(rows)}</ul></section>')
     return "".join(blocks)
 
 
@@ -667,6 +815,7 @@ def main() -> None:
         + stacked_bar_svg(rows, last_month, W=360, H=280, cls="narrow"),
         "{{TABLE}}": table_html(rows, last_month),
         "{{WEEK}}": week_html(acts, now.date()),
+        "{{CUM}}": cum_html(acts, now.date()),
         "{{C_YEAR}}": str(cs["year"]),
         "{{C_GOAL}}": fmt_km(cs["goal"]),
         "{{C_PARTNER}}": pname,
@@ -759,10 +908,11 @@ th:first-child{text-align:left}thead th{color:var(--text-2);font-weight:600}
 .mtick{stroke:var(--axis);stroke-width:1}
 .xh{stroke:var(--axis);stroke-width:1;opacity:0}.xhit{fill:transparent;cursor:crosshair}
 tfoot th,tfoot td{border-bottom:0;font-weight:600}
-.disc{border-top:1px solid var(--border);padding-top:14px;margin-top:14px}
-.disc:first-of-type{margin-top:4px}
-.dh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:4px}
-h3{font-size:15px;margin:0}
+.disc{margin-top:16px;border-top:4px solid var(--text)}
+.dh{display:flex;align-items:flex-end;justify-content:space-between;gap:4px 10px;flex-wrap:wrap;
+ margin:-2px 0 8px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+h3{font-size:21px;line-height:1.2;margin:0;letter-spacing:-.015em}
+.dm{color:var(--muted);font-size:12px;margin:2px 0 0;font-variant-numeric:tabular-nums}
 .pbb{font-size:13px;color:var(--text-2);font-variant-numeric:tabular-nums}
 .pbb b{color:var(--pb);font-size:17px;margin:0 4px;letter-spacing:-.01em}
 .pbb i{font-style:normal;color:var(--muted);font-size:12px}
@@ -786,6 +936,7 @@ h3{font-size:15px;margin:0}
 .rt.goal{color:var(--text-2);font-size:13px}
 .up .rn{font-weight:600}
 .fine{color:var(--muted);font-size:12px;margin:12px 0 0}
+.card .note+.fine{margin-top:0}
 .pbx,.gx{display:inline-block;width:9px;height:9px;border-radius:50%;vertical-align:-1px;margin-left:4px}
 .pbx{background:var(--pb)}.gx{border:2px dashed var(--pb)}
 @media (max-width:480px){.rl li{grid-template-columns:1fr auto}.rl .rd{grid-column:1/-1}
@@ -817,6 +968,24 @@ h3{font-size:15px;margin:0}
  color:var(--text-2);text-decoration:none;-webkit-tap-highlight-color:transparent}
 .tabs a[aria-selected="true"]{background:var(--text);color:var(--bg)}
 .js .panel{display:none}.js .panel.on{display:block}
+.seg-f{display:flex;gap:2px;padding:3px;margin:2px 0 10px;background:var(--bg);border:1px solid var(--border);border-radius:10px}
+.seg-f button{flex:1;font:inherit;font-size:13px;font-weight:600;color:var(--text-2);background:none;border:0;
+ border-radius:7px;padding:6px 4px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.seg-f button[aria-pressed="true"]{background:var(--card);color:var(--text);box-shadow:0 0 0 1px var(--border)}
+.cy:not(.sel),.ct:not(.sel){display:none!important}
+.cl{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.cl-all{stroke:var(--text)}.cl-run{stroke:var(--run)}.cl-bike{stroke:var(--bike)}.cl-swim{stroke:var(--swim)}
+.cl-old{stroke:var(--muted);stroke-width:1.5}.cl-old.o2{opacity:.6}.cl-old.o3{opacity:.4}
+.cd-all{fill:var(--text)}.cd-run{fill:var(--run)}.cd-bike{fill:var(--bike)}.cd-swim{fill:var(--swim)}
+.chart .lbl.old{fill:var(--muted);font-weight:500}
+#ptr{position:fixed;left:50%;top:0;z-index:20;transform:translate(-50%,-48px);display:flex;align-items:center;gap:8px;
+ background:var(--text);color:var(--bg);font-size:13px;font-weight:600;padding:7px 14px;border-radius:18px;
+ pointer-events:none;opacity:0;margin-top:env(safe-area-inset-top)}
+#ptr i{display:inline-block;font-style:normal;transition:transform .15s}
+#ptr.ready i{transform:rotate(180deg)}
+#ptr.busy i{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+html{overscroll-behavior-y:none}
 footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
 @media (max-width:480px){.mini b{font-size:16px}.kpi{padding:10px}.kpi b{font-size:18px;white-space:nowrap}.kpi span{font-size:12px}.kpis{gap:8px}}
 </style>
@@ -849,6 +1018,12 @@ footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
  {{CHART}}
  <details><summary>Als Tabelle anzeigen</summary><div class="tw">{{TABLE}}</div></details>
 </section>
+
+<section class="card">
+ <h2 id="c3t">Trainingsstunden kumuliert – Jahresvergleich</h2>
+ <p class="sub">Bewegungszeit seit 1. Januar, eine Linie pro Kalenderjahr</p>
+ {{CUM}}
+</section>
 </div>
 
 <div class="panel" id="p-wettkaempfe" data-panel="wettkaempfe">
@@ -856,9 +1031,9 @@ footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
  <h2>Wettkämpfe</h2>
  <p class="sub">Endzeiten je Disziplin – vergangene Rennen und geplante Starts</p>
  {{R_NEXT}}
- {{R_BLOCKS}}
  {{R_NOTE}}
 </section>
+{{R_BLOCKS}}
 </div>
 
 <div class="panel" id="p-challenges" data-panel="challenges">
@@ -875,6 +1050,7 @@ footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
 <footer>Daten: Strava · aktualisiert {{BUILT}} Uhr</footer>
 </main>
 <div id="tip"></div>
+<div id="ptr" aria-hidden="true"><i>↓</i><span>Zum Aktualisieren ziehen</span></div>
 <script>
 (function(){
 var tabs=document.querySelectorAll('.tabs a'),ids=[].map.call(tabs,function(a){return a.dataset.tab;});
@@ -886,6 +1062,44 @@ tabs.forEach(function(a){a.addEventListener('click',function(e){e.preventDefault
  history.replaceState(null,'','#'+a.dataset.tab);show(a.dataset.tab,true);});});
 window.addEventListener('hashchange',function(){show(location.hash.slice(1),true);});
 show(location.hash.slice(1),false);})();
+</script>
+<script>
+(function(){ /* Filter Jahresvergleich */
+document.querySelectorAll('.seg-f button').forEach(function(b){b.addEventListener('click',function(){
+ var f=b.dataset.f;document.querySelectorAll('.seg-f button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+ document.querySelectorAll('.cy,.ct').forEach(function(el){el.classList.toggle('sel',el.dataset.f===f);});});});
+var Y=JSON.parse(document.getElementById('ydata').textContent),t=document.getElementById('tip');
+function h(v){return (v<100?v.toFixed(1).replace('.',','):Math.round(v))+' h';}
+document.querySelectorAll('svg.cy').forEach(function(sv){
+ var L=+sv.dataset.l,PW=+sv.dataset.pw,W=+sv.dataset.w,S=Y[sv.dataset.f],hit=sv.querySelector('.xhit'),xh=sv.querySelector('.xh');
+ var ys=Object.keys(S).sort().reverse(),ref=+ys[0]||new Date().getFullYear(),nref=((ref%4===0&&ref%100!==0)||ref%400===0)?366:365;
+ hit.addEventListener('pointermove',function(e){var r=sv.getBoundingClientRect(),k=r.width/W;
+  var fr=((e.clientX-r.left)/k-L)/PW;fr=Math.max(0,Math.min(.9999,fr));var i=Math.floor(fr*nref);
+  var xx=L+(i+1)/nref*PW;xh.setAttribute('x1',xx);xh.setAttribute('x2',xx);xh.style.opacity=1;
+  var dt=new Date(ref,0,1+i),parts=[('0'+dt.getDate()).slice(-2)+'.'+('0'+(dt.getMonth()+1)).slice(-2)+'.'];
+  ys.forEach(function(yr){var s=S[yr],n=((yr%4===0&&yr%100!==0)||yr%400===0)?366:365,j=Math.floor(fr*n);
+   if(j<s.length)parts.push(yr+' '+h(s[j]));});
+  t.textContent=parts.join(' · ');t.style.opacity=1;var x=e.clientX+12,w=t.offsetWidth;
+  if(x+w>innerWidth-8)x=e.clientX-w-12;if(x<8)x=8;t.style.left=x+'px';t.style.top=(e.clientY-40)+'px';});
+ hit.addEventListener('pointerleave',function(){t.style.opacity=0;xh.style.opacity=0;});});})();
+</script>
+<script>
+(function(){ /* Zum Aktualisieren nach unten ziehen (Handy) */
+if(!('ontouchstart' in window))return;
+var el=document.getElementById('ptr'),lab=el.querySelector('span'),y0=null,x0=0,d=0,TH=80,busy=false;
+function set(p){el.style.opacity=Math.min(1,p/40);el.style.transform='translate(-50%,'+(Math.min(p,TH*1.4)*0.7-48)+'px)';}
+addEventListener('touchstart',function(e){if(busy||window.scrollY>0||e.touches.length!==1){y0=null;return;}
+ y0=e.touches[0].clientY;x0=e.touches[0].clientX;d=0;},{passive:true});
+addEventListener('touchmove',function(e){if(y0===null)return;d=e.touches[0].clientY-y0;
+ if(d<20&&Math.abs(e.touches[0].clientX-x0)>Math.abs(d)){y0=null;set(0);return;}
+ if(d<=0||window.scrollY>0){set(0);return;}
+ if(e.cancelable)e.preventDefault();set(d);var ok=d>TH;el.classList.toggle('ready',ok);
+ lab.textContent=ok?'Loslassen zum Aktualisieren':'Zum Aktualisieren ziehen';},{passive:false});
+addEventListener('touchend',function(){if(y0===null)return;y0=null;
+ if(d>TH){busy=true;el.classList.remove('ready');el.classList.add('busy');lab.textContent='Aktualisiere …';
+  el.style.opacity=1;el.style.transform='translate(-50%,12px)';
+  location.replace(location.pathname+'?t='+Date.now()+location.hash);}
+ else{set(0);}d=0;});})();
 </script>
 <script id="cdata" type="application/json">{{C_DATA}}</script>
 <script>
