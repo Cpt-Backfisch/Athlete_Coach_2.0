@@ -56,10 +56,11 @@ Die Zuordnung steht im Code in `CATEGORIES` (`scripts/build.py`).
 
 ## Wettkämpfe (Karte „Wettkämpfe")
 
-- Eine Zeile pro Disziplin (Reihenfolge `DISCIPLINES` in `build.py`), nur Disziplinen mit Einträgen.
+- Oben eine Kopf-Karte (nächster Start, Legende). Danach **jede Disziplin als eigene Karte** (Reihenfolge `DISCIPLINES`
+  in `build.py`, nur Disziplinen mit Einträgen): 4 px Oberkante in `--text`, Titel 21 px fett, darunter „N Rennen · N geplant“.
 - **Bestzeit** in `--pb` (Lila, hell `#7d5bd9` / dunkel `#a48bea`, aus der Markenfarbe abgeleitet) –
   einzige Akzentfarbe der Karte, damit die PB sofort ins Auge fällt. Übrige Ergebnisse neutral (`--text-2`).
-- Zeitstrahl je Disziplin (eigene Jahresachse je Disziplin, schneller = oben), nur ab 2 Zeitpunkten.
+- Zeitstrahl je Disziplin (eigene Jahresachse je Disziplin, **schneller = unten**, langsamer = oben), nur ab 2 Zeitpunkten.
   Zielzeit = gestrichelter Ring + gestrichelte Linie vom letzten Ergebnis. „heute" als gepunktete Linie.
 - Liste darunter: geplante Starts zuerst (mit Countdown in Wochen), dann Ergebnisse neueste zuerst mit Abstand zur PB.
 
@@ -68,3 +69,18 @@ Die Zuordnung steht im Code in `CATEGORIES` (`scripts/build.py`).
 - Eine Seite, oben ein klebender Umschalter mit Tabs („Training", „Wettkämpfe", „Challenges"). Aktiver Tab = gefüllt
   in `--text`. Neue Bereiche bekommen einen eigenen Tab statt die Seite zu verlängern (max. ~4 Tabs fürs Handy).
 - Jeder Tab ist per Anker verlinkbar (`#training`, `#wettkaempfe`, `#challenges`). Ohne JavaScript sind alle Bereiche untereinander sichtbar.
+
+## Jahresvergleich (Tab „Training“, unterste Karte)
+
+- Liniendiagramm Jan–Dez, eine Linie pro Kalenderjahr: kumulierte Bewegungszeit in Stunden, Tageswerte.
+- Umschalter (Segment-Buttons) „Gesamt · Laufen · Rad · Schwimmen“; jede Variante hat eine eigene y-Skala.
+  Ohne JavaScript ist nur „Gesamt“ sichtbar.
+- Aktuelles Jahr in der Sportfarbe (Gesamt: `--text`) mit Endpunkt; Vorjahre neutral in `--muted`,
+  ältere Jahre zunehmend blasser – so bleiben die Sportfarben eindeutig. Beschriftung direkt am Linienende
+  (schmal: zweizeilig Jahr/Wert). Fadenkreuz zeigt alle Jahre am selben Tag; Tabelle = Monatsende-Stände.
+
+## Zum Aktualisieren ziehen
+
+- Auf Touch-Geräten: ganz oben nach unten ziehen → Hinweis-Pille „Loslassen zum Aktualisieren“ → Seite lädt neu
+  (mit `?t=…` angehängt, damit kein zwischengespeicherter Stand kommt). Natives Überziehen ist per
+  `overscroll-behavior-y:none` aus, damit Safari nicht doppelt lädt.
