@@ -1,6 +1,6 @@
 # Status & nächste Schritte
 
-> Zuletzt aktualisiert: 04.10.2026. Diese Datei am Ende jeder Arbeitssitzung aktualisieren
+> Zuletzt aktualisiert: 05.10.2026. Diese Datei am Ende jeder Arbeitssitzung aktualisieren
 > (was erledigt wurde, was als Nächstes kommt, neue Entscheidungen).
 
 ## Aktueller Stand
@@ -18,8 +18,7 @@
   Daten in `data/races.json` (offizielle Zeiten aus dem Athletenprofil; nur Eschborn–Frankfurt 2026 laut Uhr)
 - ⏳ Ersten Stand von Nico eintragen (bisher keine Daten → seine Linie ist noch ausgeblendet)
 - ✅ Täglicher Task „athlete.coach Dashboard-Update", 21:59 Uhr, folgt [`UPDATE.md`](UPDATE.md)
-- ⏳ **GitHub Pages einschalten** (Sebastian, einmalig): Repo → Settings → Pages → Source *Deploy from a branch* → Branch `main`, Ordner `/ (root)` → Save.
-  Danach erreichbar unter `https://cpt-backfisch.github.io/Athlete_Coach_2.0/`
+- ✅ **GitHub Pages** ist aktiv: `https://cpt-backfisch.github.io/Athlete_Coach_2.0/` (von Sebastian bestätigt, 05.10.2026)
 - ⏳ Ersten automatischen Lauf (heute 21:59) am nächsten Tag prüfen: neuer Commit „Update …" von Claude im Repo?
 
 ## Nächste Schritte (Vorschlag, Reihenfolge offen)
@@ -58,3 +57,4 @@
 | 04.10.2026 | Seite in Tabs „Training" / „Wettkämpfe" / „Challenges" aufgeteilt, damit man nicht ewig scrollt; 1000-km-Challenge liegt unter „Challenges" |
 | 04.10.2026 | „Diese Woche": Woche Mo–So zum Build-Datum; Details nur aus vorhandenen Feldern (keine neuen Strava-Felder) |
 | 04.10.2026 | Nicos Daten manuell (`data/challenge.json`), weil der Strava-Connector nur Sebastians Konto liest |
+| 05.10.2026 | GitHub Pages läuft bereits unter der oben genannten Adresse (Status-Eintrag war veraltet) |
