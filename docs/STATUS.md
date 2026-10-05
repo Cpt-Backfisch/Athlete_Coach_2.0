@@ -1,12 +1,12 @@
 # Status & nächste Schritte
 
-> Zuletzt aktualisiert: 05.10.2026. Diese Datei am Ende jeder Arbeitssitzung aktualisieren
+> Zuletzt aktualisiert: 05.10.2026 (abends). Diese Datei am Ende jeder Arbeitssitzung aktualisieren
 > (was erledigt wurde, was als Nächstes kommt, neue Entscheidungen).
 
 ## Aktueller Stand
 
 - ✅ Architektur entschieden und getestet → [`ARCHITEKTUR.md`](ARCHITEKTUR.md)
-- ✅ Daten 2026 importiert: 130 Aktivitäten (01.01.–03.10.2026) in `data/activities.json`
+- ✅ Daten importiert: 2024–2026 (Backfill 2024/2025 am 05.10.2026: 291 Aktivitäten) in `data/activities.json`
 - ✅ `scripts/ingest.py` (Datenschutz-Filter) und `scripts/build.py` (Seite bauen)
 - ✅ Erste Seite: KPI-Kacheln + **Testgrafik** „Trainingsstunden pro Monat 2026 nach Sportart"
 - ✅ **1000-km-Challenge 2026** mit Nico (Chef): kumulierte Lauf-km, lineare Soll-Linie, Nicos Linie,
@@ -16,6 +16,10 @@
 - ✅ **Menü-Tabs** „Training", „Wettkämpfe", „Challenges" (eine Seite, Umschalten per Tab, Link-Anker `#training`, `#wettkaempfe`, `#challenges`)
 - ✅ **Wettkämpfe-Tab**: alle Rennen seit 2015 und geplante Starts je Disziplin, Bestzeit hervorgehoben, Countdown in Wochen.
   Daten in `data/races.json` (offizielle Zeiten aus dem Athletenprofil; nur Eschborn–Frankfurt 2026 laut Uhr)
+- ✅ **Jahresvergleich** im Tab Training: kumulierte Stunden Jan–Dez, eine Linie + Farbe pro Kalenderjahr,
+  Filter Gesamt/Laufen/Rad/Schwimmen
+- ✅ **Wettkämpfe**: y-Achse schneller = unten; jede Disziplin als eigene Karte mit großem Titel
+- ✅ **Zum Aktualisieren ziehen** (Handy): ganz oben runterziehen lädt die Seite frisch
 - ⏳ Ersten Stand von Nico eintragen (bisher keine Daten → seine Linie ist noch ausgeblendet)
 - ✅ Täglicher Task „athlete.coach Dashboard-Update", 21:59 Uhr, folgt [`UPDATE.md`](UPDATE.md)
 - ✅ **GitHub Pages** ist aktiv: `https://cpt-backfisch.github.io/Athlete_Coach_2.0/` (von Sebastian bestätigt, 05.10.2026)
@@ -30,7 +34,7 @@
    Teil, den Claude statt des Scripts erzeugt – Regeln dafür vorher festlegen.)
 3. **Wettkämpfe:** nach jedem Rennen Ergebnis in `data/races.json` (und im Athletenprofil) eintragen.
    Nächstes Rennen: Frankfurt Marathon 25.10.2026, Ziel unter 3:37:34. Zielzeiten Kraichgau/Ironman bewusst offen.
-4. **Historische Daten** 2024/2025 nachladen (einmaliger Backfill über den Connector, gleicher Ablauf wie UPDATE.md mit früherem Startdatum).
+4. Optional: weitere Grafiken mit den Vorjahresdaten (z. B. Wochenumfang im Jahresvergleich).
 5. Optional: Icon/Logo für „Zum Home-Bildschirm".
 
 ## Bekannte Einschränkungen
@@ -58,3 +62,7 @@
 | 04.10.2026 | „Diese Woche": Woche Mo–So zum Build-Datum; Details nur aus vorhandenen Feldern (keine neuen Strava-Felder) |
 | 04.10.2026 | Nicos Daten manuell (`data/challenge.json`), weil der Strava-Connector nur Sebastians Konto liest |
 | 05.10.2026 | GitHub Pages läuft bereits unter der oben genannten Adresse (Status-Eintrag war veraltet) |
+| 05.10.2026 | Backfill 2024/2025 als Daten-Update direkt auf `main` (Werte aus den Connector-Antworten übernommen, nur `KEEP`-Felder) |
+| 05.10.2026 | Wettkampf-Grafik: schnellere Zeiten unten. Disziplinen als eigene Karten |
+| 05.10.2026 | Jahresvergleich: Farbe = Jahr (aktuell Lila, Vorjahr Blau, dann Orange, Grün), in allen Filtern gleich |
+| 05.10.2026 | Zum Aktualisieren ziehen per eigenem Script; natives Überziehen aus, Neuladen mit `?t=…` gegen Cache |
