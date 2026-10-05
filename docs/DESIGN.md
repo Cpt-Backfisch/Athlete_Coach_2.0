@@ -75,9 +75,11 @@ Die Zuordnung steht im Code in `CATEGORIES` (`scripts/build.py`).
 - Liniendiagramm Jan–Dez, eine Linie pro Kalenderjahr: kumulierte Bewegungszeit in Stunden, Tageswerte.
 - Umschalter (Segment-Buttons) „Gesamt · Laufen · Rad · Schwimmen“; jede Variante hat eine eigene y-Skala.
   Ohne JavaScript ist nur „Gesamt“ sichtbar.
-- Aktuelles Jahr in der Sportfarbe (Gesamt: `--text`) mit Endpunkt; Vorjahre neutral in `--muted`,
-  ältere Jahre zunehmend blasser – so bleiben die Sportfarben eindeutig. Beschriftung direkt am Linienende
-  (schmal: zweizeilig Jahr/Wert). Fadenkreuz zeigt alle Jahre am selben Tag; Tabelle = Monatsende-Stände.
+- **Jede Jahreslinie hat eine eigene Farbe**, gleich in allen Filtern (Farbe = Jahr, nicht Sportart):
+  aktuelles Jahr `--pb` (Lila, etwas dicker, mit Endpunkt), Vorjahr `--run` (Blau), davor `--bike` (Orange),
+  davor `--swim` (Grün), noch ältere `--muted`. Legende mit Jahreszahlen über dem Diagramm.
+  Beschriftung direkt am Linienende (schmal: zweizeilig Jahr/Wert). Fadenkreuz zeigt alle Jahre am selben Tag;
+  Tabelle = Monatsende-Stände.
 
 ## Zum Aktualisieren ziehen
 

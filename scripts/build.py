@@ -136,6 +136,12 @@ def cum_series(acts: list, today) -> dict:
     return out
 
 
+def year_cls(yr: int, cur_year: int) -> str:
+    """Farbe je Jahr: aktuelles Jahr y0 (Lila), Vorjahr y1 (Blau), dann y2 (Orange), y3 (Grün), älter grau."""
+    age = cur_year - yr
+    return f"y{age}" if 0 <= age <= 3 else "yx"
+
+
 def year_len(yr: int) -> int:
     return (date(yr + 1, 1, 1) - date(yr, 1, 1)).days
 
@@ -175,8 +181,7 @@ def cum_svg(series: dict, f: str, cur_year: int, W: int = 720, H: int = 320, cls
         if not s:
             continue
         cur = yr == cur_year
-        age = cur_year - yr
-        klass = f"cl cl-{f}" if cur else f"cl cl-old o{min(age, 3)}"
+        klass = f"cl {year_cls(yr, cur_year)}" + (" cur" if cur else "")
         d = f"M{L},{y(0):.1f} " + " ".join(f"L{x(i, n):.1f},{y(v):.1f}" for i, v in enumerate(s))
         parts.append(f'<path class="{klass}" d="{d}"/>')
         ends.append((yr, cur, x(len(s) - 1, n), y(s[-1]), s[-1]))
@@ -192,12 +197,12 @@ def cum_svg(series: dict, f: str, cur_year: int, W: int = 720, H: int = 320, cls
                 ty = p[1] + gap
         placed.append((ex + 8, ty))
         if cur:
-            parts.append(f'<circle class="dot cd-{f}" cx="{ex:.1f}" cy="{ey:.1f}" r="4.5"/>')
+            parts.append(f'<circle class="dot cd {year_cls(yr, cur_year)}" cx="{ex:.1f}" cy="{ey:.1f}" r="4.5"/>')
         val = f"{fmt_h(v) if v < 100 else round(v)} h"
         lx = ex + 8
         body = (f'<tspan x="{lx:.1f}">{yr}</tspan><tspan x="{lx:.1f}" dy="13">{val}</tspan>' if two
                 else f"{yr} · {val}")
-        parts.append(f'<text class="lbl{"" if cur else " old"}" x="{lx:.1f}" y="{ty:.1f}">{body}</text>')
+        parts.append(f'<text class="lbl" x="{lx:.1f}" y="{ty:.1f}">{body}</text>')
     parts.append(f'<line class="xh" x1="0" x2="0" y1="{T}" y2="{y(0):.1f}"/>')
     parts.append(f'<rect class="xhit" x="{L}" y="{T}" width="{pw}" height="{ph}"/>')
     parts.append("</svg>")
@@ -238,7 +243,10 @@ def cum_html(acts: list, today) -> str:
             'nach dem Import älterer Strava-Daten.</p>')
     js = json.dumps({f: {str(k): v for k, v in data[f].items()} for f, _ in CUM_FILTERS},
                     separators=(",", ":")).replace("</", "<\\/")
+    legend = "".join(f'<li><span class="ls {year_cls(yr, cur)}"></span>{yr}</li>'
+                     for yr in sorted(data["all"], reverse=True))
     return (f'<div class="seg-f" role="group" aria-label="Sportart">{btns}</div>'
+            f'<ul class="legend">{legend}</ul>'
             f'<div class="cyw">{charts}</div>'
             f'<details><summary>Als Tabelle anzeigen</summary><div class="tw">{tables}</div></details>'
             f'{hint}<script id="ydata" type="application/json">{js}</script>')
@@ -973,11 +981,10 @@ h3{font-size:21px;line-height:1.2;margin:0;letter-spacing:-.015em}
  border-radius:7px;padding:6px 4px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .seg-f button[aria-pressed="true"]{background:var(--card);color:var(--text);box-shadow:0 0 0 1px var(--border)}
 .cy:not(.sel),.ct:not(.sel){display:none!important}
-.cl{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
-.cl-all{stroke:var(--text)}.cl-run{stroke:var(--run)}.cl-bike{stroke:var(--bike)}.cl-swim{stroke:var(--swim)}
-.cl-old{stroke:var(--muted);stroke-width:1.5}.cl-old.o2{opacity:.6}.cl-old.o3{opacity:.4}
-.cd-all{fill:var(--text)}.cd-run{fill:var(--run)}.cd-bike{fill:var(--bike)}.cd-swim{fill:var(--swim)}
-.chart .lbl.old{fill:var(--muted);font-weight:500}
+.cl{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}.cl.cur{stroke-width:2.5}
+.cl.y0{stroke:var(--pb)}.cl.y1{stroke:var(--run)}.cl.y2{stroke:var(--bike)}.cl.y3{stroke:var(--swim)}.cl.yx{stroke:var(--muted)}
+.cd.y0{fill:var(--pb)}
+.ls.y0{border-color:var(--pb)}.ls.y1{border-color:var(--run)}.ls.y2{border-color:var(--bike)}.ls.y3{border-color:var(--swim)}.ls.yx{border-color:var(--muted)}
 #ptr{position:fixed;left:50%;top:0;z-index:20;transform:translate(-50%,-48px);display:flex;align-items:center;gap:8px;
  background:var(--text);color:var(--bg);font-size:13px;font-weight:600;padding:7px 14px;border-radius:18px;
  pointer-events:none;opacity:0;margin-top:env(safe-area-inset-top)}
