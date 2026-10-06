@@ -20,6 +20,8 @@ Strava. Nicos km kann der Connector nicht lesen – sie werden **von Hand** gepf
 
 ## Regeln
 
+- KPI „Nico vor/hinter dir“ vergleicht am Datum von Nicos **letztem** Eintrag (nicht mit Sebastians heutigem Stand), sonst wäre der Vergleich durch veraltete Partner-Daten verzerrt.
+
 - Was zählt: Laufen (Run, Trail Run, Laufband). Gehen/Wandern zählt nicht – gilt für beide.
 - Nur Datum + km speichern, keine weiteren Angaben zu Nico (öffentliches Repo).
 - Neues Jahr: `year` und ggf. `goal_km` anpassen, `entries` leeren.

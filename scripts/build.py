@@ -384,7 +384,17 @@ def challenge_stats(s: dict) -> str:
         (f"{fmt_km(soll)} km", "Soll heute"),
         (f"{sign}{fmt_km(abs(diff))} km", "vor dem Plan" if diff >= 0 else "hinter dem Plan"),
     ]
-    out = '<div class="mini">' + "".join(f"<div><b>{a}</b><span>{b}</span></div>" for a, b in tiles) + "</div>"
+    if s["partner_pts"]:
+        # Fairer Vergleich am Tag von Nicos letztem Stand, nicht mit Sebastians heutigem Wert
+        li, lv = s["partner_pts"][-1]
+        ci = min(li, e)
+        gap = lv - s["me"][ci]
+        when = date.fromordinal(date(s["year"], 1, 1).toordinal() + ci).strftime("%d.%m.")
+        pn = html.escape(s["partner_name"])
+        tiles.append((f"{'+' if gap >= 0 else '−'}{fmt_km(abs(gap))} km",
+                      f"{pn} {'vor' if gap >= 0 else 'hinter'} dir<em>Stand {when}</em>"))
+    cls = "mini m4" if len(tiles) == 4 else "mini"
+    out = f'<div class="{cls}">' + "".join(f"<div><b>{a}</b><span>{b}</span></div>" for a, b in tiles) + "</div>"
     if me >= goal:
         note = f"Ziel erreicht – {fmt_km(me)} km."
     elif days_left > 0:
@@ -902,6 +912,7 @@ th,td{padding:5px 8px;text-align:right;border-bottom:1px solid var(--border);whi
 th:first-child{text-align:left}thead th{color:var(--text-2);font-weight:600}
 .card+.card{margin-top:16px}
 .mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 6px}
+.mini.m4{grid-template-columns:repeat(4,1fr)}
 .mini div{border-left:2px solid var(--border);padding-left:10px}
 .mini b{display:block;font-size:20px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .mini span{color:var(--text-2);font-size:12px}
@@ -962,7 +973,7 @@ h3{font-size:21px;line-height:1.2;margin:0;letter-spacing:-.015em}
  text-align:center;transform:rotate(90deg);transition:transform .15s}
 .wa[open] summary::after{transform:rotate(-90deg)}
 .mini em{display:block;font-style:normal;color:var(--muted);font-size:12px;white-space:nowrap}
-@media (max-width:480px){.mini em{font-size:11px}}
+@media (max-width:480px){.mini em{font-size:11px}.mini.m4{grid-template-columns:repeat(2,1fr);row-gap:10px}}
 .wd{color:var(--text-2);font-size:13px;white-space:nowrap}.ws{display:flex;align-items:center;gap:8px;font-weight:600;min-width:0}
 .wv{text-align:right;white-space:nowrap}
 .wa dl{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;margin:0 0 12px 72px;font-size:13px}
