@@ -1,6 +1,6 @@
 # Status & nächste Schritte
 
-> Zuletzt aktualisiert: 05.10.2026 (abends). Diese Datei am Ende jeder Arbeitssitzung aktualisieren
+> Zuletzt aktualisiert: 07.10.2026 (abends). Diese Datei am Ende jeder Arbeitssitzung aktualisieren
 > (was erledigt wurde, was als Nächstes kommt, neue Entscheidungen).
 
 ## Aktueller Stand
@@ -20,10 +20,10 @@
   Filter Gesamt/Laufen/Rad/Schwimmen
 - ✅ **Wettkämpfe**: y-Achse schneller = unten; jede Disziplin als eigene Karte mit großem Titel
 - ✅ **Zum Aktualisieren ziehen** (Handy): ganz oben runterziehen lädt die Seite frisch
-- ⏳ Ersten Stand von Nico eintragen (bisher keine Daten → seine Linie ist noch ausgeblendet)
+- ✅ Nicos Monatsstände Jan–Sep 2026 eingetragen (779,9 km bis 30.09.); nächster Stand Ende Oktober
 - ✅ Täglicher Task „athlete.coach Dashboard-Update", 21:59 Uhr, folgt [`UPDATE.md`](UPDATE.md)
 - ✅ **GitHub Pages** ist aktiv: `https://cpt-backfisch.github.io/Athlete_Coach_2.0/` (von Sebastian bestätigt, 05.10.2026)
-- ⏳ Ersten automatischen Lauf (heute 21:59) am nächsten Tag prüfen: neuer Commit „Update …" von Claude im Repo?
+- ✅ Täglicher Task läuft: automatische Commits „Update …" am 05.10. und 06.10.2026 bestätigt
 
 ## Nächste Schritte (Vorschlag, Reihenfolge offen)
 
