@@ -798,6 +798,49 @@ def week_html(acts: list, today) -> str:
             '<p class="fine">Tippen für Details. Woche Mo–So, Zeiten = Bewegungszeit.</p>')
 
 
+SPONSORS = ROOT / "data" / "sponsors.json"
+
+
+def fmt_eur(v: float) -> str:
+    """12,50 € bzw. 1.250 € (ganze Beträge ohne Nachkommastellen)."""
+    if abs(v - round(v)) < 0.005:
+        return f"{round(v):,}".replace(",", ".") + " €"
+    return f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") + " €"
+
+
+def sponsors_html(cfg: dict) -> str:
+    link = (cfg.get("paypal") or "").strip()
+    if link.startswith("https://"):
+        btn = (f'<a class="pp" href="{html.escape(link)}" target="_blank" rel="noopener">'
+               'Mit PayPal unterstützen</a>')
+    else:
+        btn = '<p class="pp none">PayPal-Link folgt</p>'
+    ents = sorted(cfg.get("entries", []), key=lambda e: e["date"], reverse=True)
+    if not ents:
+        return (btn + '<p class="note">Noch keine Sponsoren – der erste Beitrag erscheint hier mit Datum und Betrag.</p>')
+    total = sum(float(e["amount"]) for e in ents)
+    sums: dict = {}
+    for e in ents:
+        n = (e.get("name") or "").strip()
+        if n:
+            sums[n] = sums.get(n, 0.0) + float(e["amount"])
+    stats = (f'<div class="mini"><div><b>{fmt_eur(total)}</b><span>gesamt</span></div>'
+             f'<div><b>{len(ents)}</b><span>Beiträge</span></div>'
+             f'<div><b>{len(sums) + sum(1 for e in ents if not (e.get("name") or "").strip())}</b>'
+             '<span>Unterstützer</span></div></div>')
+    top = sorted(sums.items(), key=lambda kv: (-kv[1], kv[0]))[:5]
+    rank = ""
+    if top:
+        rank = ('<h4>Größte Sponsoren</h4><ol class="sl">' + "".join(
+            f'<li><span class="sr">{i}</span><span class="sn">{html.escape(n)}</span>'
+            f'<span class="sv">{fmt_eur(v)}</span></li>' for i, (n, v) in enumerate(top, 1)) + "</ol>")
+    rows = "".join(
+        f'<li><span class="sd">{fmt_date(date.fromisoformat(e["date"]))}</span>'
+        f'<span class="sn">{html.escape((e.get("name") or "").strip() or "Anonym")}</span>'
+        f'<span class="sv">{fmt_eur(float(e["amount"]))}</span></li>' for e in ents)
+    return btn + stats + rank + f'<h4>Alle Beiträge</h4><ul class="sl">{rows}</ul>'
+
+
 def main() -> None:
     store = json.loads(DATA.read_text(encoding="utf-8"))
     acts = store["activities"]
@@ -820,6 +863,9 @@ def main() -> None:
 
     rcfg = json.loads(RACES.read_text(encoding="utf-8")) if RACES.exists() else {"races": []}
     rd = race_data(rcfg, now.date())
+
+    scfg = (json.loads(SPONSORS.read_text(encoding="utf-8")) if SPONSORS.exists()
+            else {"paypal": "", "entries": []})
 
     page = TEMPLATE
     for k, v in {
@@ -845,6 +891,7 @@ def main() -> None:
         "{{R_NEXT}}": next_race_html(rd, now.date()),
         "{{R_BLOCKS}}": races_html(rd, now.date()),
         "{{R_NOTE}}": races_note(rcfg),
+        "{{S_BODY}}": sponsors_html(scfg),
     }.items():
         page = page.replace(k, v)
     OUT.write_text(page, encoding="utf-8")
@@ -1004,6 +1051,17 @@ h3{font-size:21px;line-height:1.2;margin:0;letter-spacing:-.015em}
 #ptr.busy i{animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 html{overscroll-behavior-y:none}
+.coach{display:block;width:100%;max-width:420px;height:auto;margin:4px auto 0;border-radius:10px}
+.pp{display:block;text-align:center;font-weight:600;font-size:15px;padding:11px 14px;border-radius:10px;
+ background:var(--text);color:var(--bg);text-decoration:none;margin:4px 0 14px}
+.pp.none{background:none;color:var(--muted);border:1px dashed var(--border)}
+h4{font-size:13px;color:var(--text-2);margin:16px 0 4px;font-weight:600}
+.sl{list-style:none;margin:0;padding:0;font-size:14px;font-variant-numeric:tabular-nums}
+.sl li{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--border)}
+.sl li:last-child{border-bottom:0}
+.sr{width:18px;color:var(--muted);font-weight:700}.sd{width:84px;color:var(--text-2);font-size:13px}
+.sn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sv{font-weight:600;white-space:nowrap}
+ol.sl li:first-child .sr,ol.sl li:first-child .sv{color:var(--pb)}
 footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
 @media (max-width:480px){.mini b{font-size:16px}.kpi{padding:10px}.kpi b{font-size:18px;white-space:nowrap}.kpi span{font-size:12px}.kpis{gap:8px}}
 </style>
@@ -1016,6 +1074,7 @@ footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
  <a href="#training" role="tab" data-tab="training" aria-selected="true">Training</a>
  <a href="#wettkaempfe" role="tab" data-tab="wettkaempfe" aria-selected="false">Wettkämpfe</a>
  <a href="#challenges" role="tab" data-tab="challenges" aria-selected="false">Challenges</a>
+ <a href="#team" role="tab" data-tab="team" aria-selected="false">Team</a>
 </nav>
 
 <div class="panel" id="p-training" data-panel="training">
@@ -1062,6 +1121,19 @@ footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
  <ul class="legend">{{C_LEGEND}}</ul>
  {{C_CHART}}
  <details><summary>Als Tabelle anzeigen</summary><div class="tw">{{C_TABLE}}</div></details>
+</section>
+</div>
+
+<div class="panel" id="p-team" data-panel="team">
+<section class="card">
+ <h2>Coach</h2>
+ <p class="sub">Die Person hinter dem Plan</p>
+ <img class="coach" src="assets/coach.jpg" width="900" height="1200" alt="Foto: Coach an der Laufstrecke">
+</section>
+<section class="card">
+ <h2>Sponsoren</h2>
+ <p class="sub">Wer das Training unterstützt</p>
+ {{S_BODY}}
 </section>
 </div>
 
