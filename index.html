@@ -150,6 +150,17 @@ h3{font-size:21px;line-height:1.2;margin:0;letter-spacing:-.015em}
 #ptr.busy i{animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 html{overscroll-behavior-y:none}
+.coach{display:block;width:100%;max-width:420px;height:auto;margin:4px auto 0;border-radius:10px}
+.pp{display:block;text-align:center;font-weight:600;font-size:15px;padding:11px 14px;border-radius:10px;
+ background:var(--text);color:var(--bg);text-decoration:none;margin:4px 0 14px}
+.pp.none{background:none;color:var(--muted);border:1px dashed var(--border)}
+h4{font-size:13px;color:var(--text-2);margin:16px 0 4px;font-weight:600}
+.sl{list-style:none;margin:0;padding:0;font-size:14px;font-variant-numeric:tabular-nums}
+.sl li{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--border)}
+.sl li:last-child{border-bottom:0}
+.sr{width:18px;color:var(--muted);font-weight:700}.sd{width:84px;color:var(--text-2);font-size:13px}
+.sn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sv{font-weight:600;white-space:nowrap}
+ol.sl li:first-child .sr,ol.sl li:first-child .sv{color:var(--pb)}
 footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
 @media (max-width:480px){.mini b{font-size:16px}.kpi{padding:10px}.kpi b{font-size:18px;white-space:nowrap}.kpi span{font-size:12px}.kpis{gap:8px}}
 </style>
@@ -162,6 +173,7 @@ footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
  <a href="#training" role="tab" data-tab="training" aria-selected="true">Training</a>
  <a href="#wettkaempfe" role="tab" data-tab="wettkaempfe" aria-selected="false">Wettkämpfe</a>
  <a href="#challenges" role="tab" data-tab="challenges" aria-selected="false">Challenges</a>
+ <a href="#team" role="tab" data-tab="team" aria-selected="false">Team</a>
 </nav>
 
 <div class="panel" id="p-training" data-panel="training">
@@ -211,7 +223,20 @@ footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
 </section>
 </div>
 
-<footer>Daten: Strava · aktualisiert 07.10.2026, 20:19 Uhr</footer>
+<div class="panel" id="p-team" data-panel="team">
+<section class="card">
+ <h2>Coach</h2>
+ <p class="sub">Die Person hinter dem Plan</p>
+ <img class="coach" src="assets/coach.jpg" width="900" height="1200" alt="Foto: Coach an der Laufstrecke">
+</section>
+<section class="card">
+ <h2>Sponsoren</h2>
+ <p class="sub">Wer das Training unterstützt</p>
+ <p class="pp none">PayPal-Link folgt</p><p class="note">Noch keine Sponsoren – der erste Beitrag erscheint hier mit Datum und Betrag.</p>
+</section>
+</div>
+
+<footer>Daten: Strava · aktualisiert 07.10.2026, 20:47 Uhr</footer>
 </main>
 <div id="tip"></div>
 <div id="ptr" aria-hidden="true"><i>↓</i><span>Zum Aktualisieren ziehen</span></div>
