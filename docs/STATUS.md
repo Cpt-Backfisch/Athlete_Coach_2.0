@@ -1,6 +1,6 @@
 # Status & nächste Schritte
 
-> Zuletzt aktualisiert: 07.10.2026 (abends). Diese Datei am Ende jeder Arbeitssitzung aktualisieren
+> Zuletzt aktualisiert: 07.10.2026 (abends, Team-Tab). Diese Datei am Ende jeder Arbeitssitzung aktualisieren
 > (was erledigt wurde, was als Nächstes kommt, neue Entscheidungen).
 
 ## Aktueller Stand
@@ -13,7 +13,9 @@
   Stand/Soll/Differenz und nötige km pro Woche. Nicos Stände pflegt Sebastian per Chat → [`CHALLENGE.md`](CHALLENGE.md)
 - ✅ **„Diese Woche"** im Tab Training (über der Monatsgrafik): Wochensummen mit Vorwochenvergleich und
   aufklappbare Liste aller Einheiten. Offen: mehr Details (Puls/Watt/Kadenz) bräuchten neue Felder in `KEEP` → erst nach Sebastians OK
-- ✅ **Menü-Tabs** „Training", „Wettkämpfe", „Challenges" (eine Seite, Umschalten per Tab, Link-Anker `#training`, `#wettkaempfe`, `#challenges`)
+- ✅ **Menü-Tabs** „Training", „Wettkämpfe", „Challenges", „Team" (eine Seite, Umschalten per Tab, Link-Anker `#training`, `#wettkaempfe`, `#challenges`, `#team`)
+- ✅ **Team-Tab** (07.10.2026): Coach-Foto + Sponsoren (leere Liste, Rangliste „Größte Sponsoren“, PayPal-Platzhalter).
+  Offen: PayPal-Link in `data/sponsors.json` eintragen, sobald Sebastian ihn schickt
 - ✅ **Wettkämpfe-Tab**: alle Rennen seit 2015 und geplante Starts je Disziplin, Bestzeit hervorgehoben, Countdown in Wochen.
   Daten in `data/races.json` (offizielle Zeiten aus dem Athletenprofil; nur Eschborn–Frankfurt 2026 laut Uhr)
 - ✅ **Jahresvergleich** im Tab Training: kumulierte Stunden Jan–Dez, eine Linie + Farbe pro Kalenderjahr,
@@ -66,3 +68,7 @@
 | 05.10.2026 | Wettkampf-Grafik: schnellere Zeiten unten. Disziplinen als eigene Karten |
 | 05.10.2026 | Jahresvergleich: Farbe = Jahr (aktuell Lila, Vorjahr Blau, dann Orange, Grün), in allen Filtern gleich |
 | 05.10.2026 | Zum Aktualisieren ziehen per eigenem Script; natives Überziehen aus, Neuladen mit `?t=…` gegen Cache |
+| 07.10.2026 | Tab „Team“: Coach-Foto öffentlich – von Sebastian freigegeben |
+| 07.10.2026 | Sponsoren-Beiträge trägt Sebastian per Chat ein (`data/sponsors.json`), kein automatischer PayPal-Abgleich |
+| 07.10.2026 | Sponsoren öffentlich nur mit Vornamen bzw. „Anonym“ (Vorschlag, von Sebastian nicht widersprochen) |
+| 07.10.2026 | PayPal-Link vorerst leer → Platzhalter „PayPal-Link folgt“ |

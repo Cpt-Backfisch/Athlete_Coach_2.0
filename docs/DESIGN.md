@@ -66,9 +66,17 @@ Die Zuordnung steht im Code in `CATEGORIES` (`scripts/build.py`).
 
 ## Navigation (Tabs)
 
-- Eine Seite, oben ein klebender Umschalter mit Tabs („Training", „Wettkämpfe", „Challenges"). Aktiver Tab = gefüllt
+- Eine Seite, oben ein klebender Umschalter mit Tabs („Training", „Wettkämpfe", „Challenges", „Team"). Aktiver Tab = gefüllt
   in `--text`. Neue Bereiche bekommen einen eigenen Tab statt die Seite zu verlängern (max. ~4 Tabs fürs Handy).
-- Jeder Tab ist per Anker verlinkbar (`#training`, `#wettkaempfe`, `#challenges`). Ohne JavaScript sind alle Bereiche untereinander sichtbar.
+- Jeder Tab ist per Anker verlinkbar (`#training`, `#wettkaempfe`, `#challenges`, `#team`). Ohne JavaScript sind alle Bereiche untereinander sichtbar.
+
+## Team (Tab „Team“)
+
+- Karte **Coach**: Foto `assets/coach.jpg` (max. 420 px breit, abgerundet), bislang ohne Namen.
+- Karte **Sponsoren**: oben PayPal-Button (gefüllt in `--text`); ohne Link gestrichelter Platzhalter „PayPal-Link folgt“.
+  Darunter Summe / Beiträge / Unterstützer (`.mini`), „Größte Sponsoren“ (Top 5 nach Gesamtbetrag je Name, Platz 1 in `--pb`;
+  anonyme Beiträge zählen nicht in die Rangliste) und „Alle Beiträge“ neueste zuerst mit Datum, Name, Betrag.
+  Leer: kurzer Hinweis statt Liste. Beträge deutsch („15,50 €“, ganze Beträge ohne Nachkommastellen).
 
 ## Jahresvergleich (Tab „Training“, unterste Karte)
 
