@@ -15,7 +15,7 @@
   aufklappbare Liste aller Einheiten. Offen: mehr Details (Puls/Watt/Kadenz) bräuchten neue Felder in `KEEP` → erst nach Sebastians OK
 - ✅ **Menü-Tabs** „Training", „Wettkämpfe", „Challenges", „Team" (eine Seite, Umschalten per Tab, Link-Anker `#training`, `#wettkaempfe`, `#challenges`, `#team`)
 - ✅ **Team-Tab** (07.10.2026): Coach-Foto + Sponsoren (leere Liste, Rangliste „Größte Sponsoren“, PayPal-Platzhalter).
-  Offen: PayPal-Link in `data/sponsors.json` eintragen, sobald Sebastian ihn schickt
+  PayPal-Link gesetzt (09.10.2026): paypal.me/derhaeger
 - ✅ **Wettkämpfe-Tab**: alle Rennen seit 2015 und geplante Starts je Disziplin, Bestzeit hervorgehoben, Countdown in Wochen.
   Daten in `data/races.json` (offizielle Zeiten aus dem Athletenprofil; nur Eschborn–Frankfurt 2026 laut Uhr)
 - ✅ **Jahresvergleich** im Tab Training: kumulierte Stunden Jan–Dez, eine Linie + Farbe pro Kalenderjahr,
@@ -75,6 +75,7 @@
 | 07.10.2026 | Sponsoren-Beiträge trägt Sebastian per Chat ein (`data/sponsors.json`), kein automatischer PayPal-Abgleich |
 | 07.10.2026 | Sponsoren öffentlich nur mit Vornamen bzw. „Anonym“ (Vorschlag, von Sebastian nicht widersprochen) |
 | 07.10.2026 | PayPal-Link vorerst leer → Platzhalter „PayPal-Link folgt“ |
+| 09.10.2026 | PayPal.Me-Link (nur Empfangen) statt Geldpool/Einmal-Links; Beiträge per Screenshot im Chat |
 | 09.10.2026 | Neuer Tab „FFM-Marathon-Plan“: öffentlicher Zeitplan, wo Sebastian am 25.10. wann ist – von Sebastian freigegeben |
 | 09.10.2026 | Strecke aus offizieller GPX des Veranstalters; Karte selbst gezeichnet aus Stadtteilgrenzen (Code for Germany), keine Kartenkacheln |
 | 09.10.2026 | Fünf Tabs: am Handy rutscht der fünfte in eine zweite Reihe – so gewünscht |
