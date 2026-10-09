@@ -17,7 +17,7 @@ Datenbank, keine API-Schlüssel.
 | Coaching, Ziele, Wettkampfzeiten, Leistungswerte | `docs/ATHLETENPROFIL.md` |
 | Wettkampf/Ergebnis/Zielzeit fürs Dashboard eintragen | `data/races.json` (Format im Feld `_info`; Zeiten wie im Athletenprofil) |
 | Marathon-Plan: Startzeit/Tempo/Zielzeit ändern | `data/marathon_plan.json` (Format im Feld `_info`), danach `build.py` |
-| Sponsor-Beitrag eintragen („Sponsor: Name, Betrag, Datum“) / PayPal-Link setzen | `data/sponsors.json` (Format im Feld `_info`), danach `build.py`, direkt auf `main` |
+| Sponsor-Beitrag eintragen („Sponsor: Name, Betrag, Datum“ oder PayPal-Screenshot; **nur Vorname**) / PayPal-Link setzen | `data/sponsors.json` (Format im Feld `_info`), danach `build.py`, direkt auf `main` |
 
 ## Struktur
 

@@ -73,7 +73,7 @@
 | 05.10.2026 | Zum Aktualisieren ziehen per eigenem Script; natives Überziehen aus, Neuladen mit `?t=…` gegen Cache |
 | 07.10.2026 | Tab „Team“: Coach-Foto öffentlich – von Sebastian freigegeben |
 | 07.10.2026 | Sponsoren-Beiträge trägt Sebastian per Chat ein (`data/sponsors.json`), kein automatischer PayPal-Abgleich |
-| 07.10.2026 | Sponsoren öffentlich nur mit Vornamen bzw. „Anonym“ (Vorschlag, von Sebastian nicht widersprochen) |
+| 07.10.2026 | Sponsoren öffentlich nur mit Vornamen bzw. „Anonym“ – am 09.10.2026 von Sebastian ausdrücklich festgelegt: **immer nur Vorname** |
 | 07.10.2026 | PayPal-Link vorerst leer → Platzhalter „PayPal-Link folgt“ |
 | 09.10.2026 | PayPal.Me-Link (nur Empfangen) statt Geldpool/Einmal-Links; Beiträge per Screenshot im Chat |
 | 09.10.2026 | Neuer Tab „FFM-Marathon-Plan“: öffentlicher Zeitplan, wo Sebastian am 25.10. wann ist – von Sebastian freigegeben |
