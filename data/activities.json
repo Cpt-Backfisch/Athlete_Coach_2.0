@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-09T20:30:16+02:00",
+ "updated_at": "2026-10-09T22:01:10+02:00",
  "activities": [
   {"start_local": "2024-01-13T11:30:25", "sport_type": "Run", "distance_m": 11684.0, "moving_time_s": 3528, "elapsed_time_s": 3531, "elevation_gain_m": 36.0},
   {"start_local": "2024-01-15T19:35:37", "sport_type": "Swim", "distance_m": 825.0, "moving_time_s": 1527, "elapsed_time_s": 2554, "elevation_gain_m": 0.0},
