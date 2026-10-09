@@ -81,6 +81,14 @@ Beide Wege folgen derselben Schritt-für-Schritt-Anleitung: [`UPDATE.md`](UPDATE
 **Was passiert, wenn ein Lauf ausfällt?** (Connector antwortet nicht, Claude-Kontingent erschöpft, …) Nichts geht verloren: Der nächste Lauf holt alles seit dem **letzten erfolgreichen** Lauf nach. Die Seite ist dann nur einen Tag älter.
 
 **Von Hand gepflegte Daten:** `data/challenge.json` (Ziel der 1000-km-Challenge und Nicos km-Stände).
+
+**Tab „FFM-Marathon-Plan“ (seit 09.10.2026):** `data/marathon_strecke.gpx` (offizielle Streckendatei des Veranstalters 2026),
+`data/marathon_karte.json` (Kartengrundlage: Frankfurter Stadtteilgrenzen von Code for Germany, daraus abgeleiteter Main,
+vereinfachte Wald-/Parkflächen, Beschriftungen) und `data/marathon_plan.json` (geschätzte Startzeit, Tempo erste Hälfte,
+geplante Endzeit, Ortsnamen je km). `build.py` liest die GPX mit der Standardbibliothek, normiert die Länge auf 42,195 km,
+rechnet das Tempo der zweiten Hälfte aus und bettet alles als JSON in die Seite ein. Karte, Regler und Rennuhr zeichnet
+ein kleines Script im Browser (SVG, keine Kartenkacheln, nichts Externes). Die Startzeit kann jeder Besucher selbst
+verschieben; sie wird nur in seinem Browser gespeichert (`localStorage`).
 Der tägliche Task fasst diese Datei nicht an; Einträge kommen per Chat dazu → [`CHALLENGE.md`](CHALLENGE.md).
 
 **Einen echten „Training fertig"-Auslöser gibt es nicht** – der Connector meldet sich nicht von selbst. Deshalb Zeitplan statt Echtzeit.

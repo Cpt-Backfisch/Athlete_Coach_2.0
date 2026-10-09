@@ -16,6 +16,7 @@ Datenbank, keine API-Schlüssel.
 | Nicos km für die 1000-km-Challenge eintragen | `docs/CHALLENGE.md` |
 | Coaching, Ziele, Wettkampfzeiten, Leistungswerte | `docs/ATHLETENPROFIL.md` |
 | Wettkampf/Ergebnis/Zielzeit fürs Dashboard eintragen | `data/races.json` (Format im Feld `_info`; Zeiten wie im Athletenprofil) |
+| Marathon-Plan: Startzeit/Tempo/Zielzeit ändern | `data/marathon_plan.json` (Format im Feld `_info`), danach `build.py` |
 | Sponsor-Beitrag eintragen („Sponsor: Name, Betrag, Datum“) / PayPal-Link setzen | `data/sponsors.json` (Format im Feld `_info`), danach `build.py`, direkt auf `main` |
 
 ## Struktur
@@ -28,6 +29,7 @@ data/activities.json    gefilterte Aktivitäten (eine pro Zeile), öffentlich
 data/challenge.json     1000-km-Challenge: Ziel + Nicos km-Stände (von Hand gepflegt)
 data/races.json         Wettkämpfe: Ergebnisse + geplante Starts mit Zielzeit (von Hand gepflegt)
 data/sponsors.json      Sponsoren: PayPal-Link + Beiträge (Datum, Betrag, Vorname/anonym; von Hand gepflegt)
+data/marathon_*.{gpx,json}  Tab FFM-Marathon-Plan: offizielle Strecke, Kartengrundlage, Plan (Startzeit, Tempo, Orte)
 assets/coach.jpg        Coach-Foto im Tab „Team“ (verkleinert, ohne Metadaten)
 scripts/ingest.py       Strava-Antwort(en) → data/activities.json (Datenschutz-Filter, Duplikate)
 scripts/build.py        data/activities.json → index.html (alle Berechnungen, SVG-Diagramme)

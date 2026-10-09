@@ -66,9 +66,10 @@ Die Zuordnung steht im Code in `CATEGORIES` (`scripts/build.py`).
 
 ## Navigation (Tabs)
 
-- Eine Seite, oben ein klebender Umschalter mit Tabs („Training", „Wettkämpfe", „Challenges", „Team"). Aktiver Tab = gefüllt
-  in `--text`. Neue Bereiche bekommen einen eigenen Tab statt die Seite zu verlängern (max. ~4 Tabs fürs Handy).
-- Jeder Tab ist per Anker verlinkbar (`#training`, `#wettkaempfe`, `#challenges`, `#team`). Ohne JavaScript sind alle Bereiche untereinander sichtbar.
+- Eine Seite, oben ein klebender Umschalter mit Tabs („Training", „Wettkämpfe", „Challenges", „Team", „FFM-Marathon-Plan"). Aktiver Tab = gefüllt
+  in `--text`. Neue Bereiche bekommen einen eigenen Tab statt die Seite zu verlängern. Tab-Namen brechen nicht um; passen sie am
+  Handy (≤ 560 px) nicht in eine Reihe, rutschen sie in eine zweite Reihe darunter (von Sebastian so gewünscht, 09.10.2026).
+- Jeder Tab ist per Anker verlinkbar (`#training`, `#wettkaempfe`, `#challenges`, `#team`, `#marathon`). Ohne JavaScript sind alle Bereiche untereinander sichtbar.
 
 ## Team (Tab „Team“)
 
@@ -94,3 +95,18 @@ Die Zuordnung steht im Code in `CATEGORIES` (`scripts/build.py`).
 - Auf Touch-Geräten: ganz oben nach unten ziehen → Hinweis-Pille „Loslassen zum Aktualisieren“ → Seite lädt neu
   (mit `?t=…` angehängt, damit kein zwischengespeicherter Stand kommt). Natives Überziehen ist per
   `overscroll-behavior-y:none` aus, damit Safari nicht doppelt lädt.
+
+## FFM-Marathon-Plan (Tab „FFM-Marathon-Plan“, `#marathon`)
+
+- Zeigt, wo Sebastian am Renntag zu welcher Uhrzeit auf der Strecke ist – für Freunde, die anfeuern wollen. Eine Karte, keine Listen/Tabellen.
+- **Rennuhr** oben: Kachel gefüllt in `--text` (wie der aktive Tab), große Uhrzeit, rechts Ortsname (immer **eine** Zeile, sonst „…“)
+  und darunter km · Laufzeit · Tempo (fest **zwei** Zeilen hoch). Feste Höhe, damit die Karte beim Schieben nicht springt.
+- **Karte** (SVG, im Browser gezeichnet): Hintergrund `--map-land`, Stadtteilgrenzen `--map-line`, Main `--map-water` (≈ 170 m breit),
+  Wald/Parks `--map-green`, Beschriftungen in `--muted` (Grün-Namen kursiv in `--map-green-ink`). Strecke `--axis`, gelaufener Teil und
+  Läuferpunkt in `--pb` (Lila – bewusst nicht Blau, damit er sich vom Main abhebt). Rauten = Orientierungspunkte, Kreise = km-Marken.
+  Umschalter „Ganze Strecke · Innenstadt“ (`.mseg`, eigene Klasse, weil `.seg-f` vom Jahresvergleich belegt ist).
+- **Tippen auf die Strecke** springt zur Uhrzeit, wann er dort ist; bei mehreren Durchgängen (z. B. Alte Oper 4×) nennt die Rennuhr die anderen Zeiten.
+- **Zeitregler** 10:00–15:00 mit Abspiel-Knopf, Schnellwahl „Jetzt (am Renntag)“ (folgt dann live der Uhr), Start, Halbmarathon, Ziel.
+- **Startzeit über der Linie**: −/+ in Minutenschritten oder eintippen, „Zurücksetzen“ auf den Wert aus `data/marathon_plan.json`.
+- Tempo-Modell: konstant `pace_first_half` bis zum Halbmarathon, danach konstant so, dass `target` erreicht wird (rechnet `build.py`).
+

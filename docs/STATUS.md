@@ -1,6 +1,6 @@
 # Status & nächste Schritte
 
-> Zuletzt aktualisiert: 07.10.2026 (abends, Team-Tab). Diese Datei am Ende jeder Arbeitssitzung aktualisieren
+> Zuletzt aktualisiert: 09.10.2026 (Tab FFM-Marathon-Plan). Diese Datei am Ende jeder Arbeitssitzung aktualisieren
 > (was erledigt wurde, was als Nächstes kommt, neue Entscheidungen).
 
 ## Aktueller Stand
@@ -23,6 +23,9 @@
 - ✅ **Wettkämpfe**: y-Achse schneller = unten; jede Disziplin als eigene Karte mit großem Titel
 - ✅ **Zum Aktualisieren ziehen** (Handy): ganz oben runterziehen lädt die Seite frisch
 - ✅ Nicos Monatsstände Jan–Sep 2026 eingetragen (779,9 km bis 30.09.); nächster Stand Ende Oktober
+- ✅ **Tab „FFM-Marathon-Plan"** (09.10.2026): Karte der offiziellen Strecke, Rennuhr, Zeitregler, Tippen auf die Strecke,
+  einstellbare Startzeit (pro Besucher). Annahmen: Start 10:10 (Block 3), 5:00 min/km bis HM, danach 5:17 → 3:37:00.
+  Daten: `data/marathon_strecke.gpx`, `data/marathon_karte.json`, `data/marathon_plan.json`. Nach dem Rennen: Tab entfernen oder ins Ergebnis umbauen
 - ✅ Täglicher Task „athlete.coach Dashboard-Update", 21:59 Uhr, folgt [`UPDATE.md`](UPDATE.md)
 - ✅ **GitHub Pages** ist aktiv: `https://cpt-backfisch.github.io/Athlete_Coach_2.0/` (von Sebastian bestätigt, 05.10.2026)
 - ✅ Täglicher Task läuft: automatische Commits „Update …" am 05.10. und 06.10.2026 bestätigt
@@ -72,3 +75,7 @@
 | 07.10.2026 | Sponsoren-Beiträge trägt Sebastian per Chat ein (`data/sponsors.json`), kein automatischer PayPal-Abgleich |
 | 07.10.2026 | Sponsoren öffentlich nur mit Vornamen bzw. „Anonym“ (Vorschlag, von Sebastian nicht widersprochen) |
 | 07.10.2026 | PayPal-Link vorerst leer → Platzhalter „PayPal-Link folgt“ |
+| 09.10.2026 | Neuer Tab „FFM-Marathon-Plan“: öffentlicher Zeitplan, wo Sebastian am 25.10. wann ist – von Sebastian freigegeben |
+| 09.10.2026 | Strecke aus offizieller GPX des Veranstalters; Karte selbst gezeichnet aus Stadtteilgrenzen (Code for Germany), keine Kartenkacheln |
+| 09.10.2026 | Fünf Tabs: am Handy rutscht der fünfte in eine zweite Reihe – so gewünscht |
+| 09.10.2026 | Startzeit auf der Seite nur pro Besucher (Browser-Speicher); zentrale Änderung = `start` in `data/marathon_plan.json` + build |
