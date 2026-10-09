@@ -1,0 +1,208 @@
+{
+ "_info": "Tab FFM-Marathon-Plan: Zeitplan, wo Sebastian am Renntag wann ist. Strecke = data/marathon_strecke.gpx (offizielle GPX des Veranstalters 2026). start = geschätzte Zeit über der Startlinie (Startblock 3, zweite Welle; jeder Besucher kann sie auf der Seite verschieben). pace_first_half = Tempo bis zum Halbmarathon (min:ss pro km), target = geplante Endzeit (h:mm:ss); das Tempo der zweiten Hälfte rechnet build.py daraus. places = [ab km, Ortsname] für die Rennuhr.",
+ "name": "Mainova Frankfurt Marathon",
+ "date": "2026-10-25",
+ "start": "10:10",
+ "block": "Startblock 3",
+ "pace_first_half": "5:00",
+ "target": "3:37:00",
+ "goal_text": "unter 3:37:34",
+ "places": [
+  [
+   0,
+   "Start Friedrich-Ebert-Anlage"
+  ],
+  [
+   0.4,
+   "Platz der Republik"
+  ],
+  [
+   0.8,
+   "Mainzer Landstraße"
+  ],
+  [
+   1.7,
+   "Bankenviertel"
+  ],
+  [
+   3.1,
+   "Platz der Republik"
+  ],
+  [
+   3.6,
+   "Friedrich-Ebert-Anlage"
+  ],
+  [
+   4.4,
+   "Bockenheimer Warte"
+  ],
+  [
+   4.8,
+   "Bockenheimer Landstraße"
+  ],
+  [
+   5.8,
+   "Alte Oper"
+  ],
+  [
+   6.2,
+   "Bankenviertel"
+  ],
+  [
+   7.4,
+   "Hauptwache"
+  ],
+  [
+   7.8,
+   "Eschenheimer Tor"
+  ],
+  [
+   8.5,
+   "Alte Oper"
+  ],
+  [
+   9.0,
+   "Reuterweg, Westend"
+  ],
+  [
+   10.2,
+   "Eschersheimer Landstraße"
+  ],
+  [
+   11.4,
+   "Eschenheimer Tor"
+  ],
+  [
+   11.9,
+   "Richtung Konstablerwache"
+  ],
+  [
+   12.4,
+   "Konstablerwache"
+  ],
+  [
+   12.9,
+   "Mainkai"
+  ],
+  [
+   13.9,
+   "Untermainbrücke"
+  ],
+  [
+   14.3,
+   "Sachsenhausen"
+  ],
+  [
+   15.0,
+   "Kennedyallee"
+  ],
+  [
+   16.6,
+   "Niederrad"
+  ],
+  [
+   19.0,
+   "Richtung Goldstein"
+  ],
+  [
+   20.5,
+   "Goldstein"
+  ],
+  [
+   21.2,
+   "Schwanheim"
+  ],
+  [
+   23.6,
+   "Schwanheimer Brücke"
+  ],
+  [
+   24.4,
+   "Am Mainufer, Nied"
+  ],
+  [
+   25.9,
+   "Höchst"
+  ],
+  [
+   26.9,
+   "Höchst, Wendepunkt"
+  ],
+  [
+   27.4,
+   "Höchst"
+  ],
+  [
+   28.2,
+   "Nied"
+  ],
+  [
+   29.6,
+   "Richtung Griesheim"
+  ],
+  [
+   30.6,
+   "Griesheim"
+  ],
+  [
+   32.4,
+   "Gallus"
+  ],
+  [
+   34.6,
+   "Richtung Messe"
+  ],
+  [
+   35.3,
+   "Messe"
+  ],
+  [
+   36.3,
+   "Platz der Republik"
+  ],
+  [
+   36.8,
+   "Mainzer Landstraße"
+  ],
+  [
+   37.3,
+   "Alte Oper"
+  ],
+  [
+   37.8,
+   "Bankenviertel"
+  ],
+  [
+   38.9,
+   "Hauptwache"
+  ],
+  [
+   39.4,
+   "Eschenheimer Tor"
+  ],
+  [
+   40.1,
+   "Alte Oper"
+  ],
+  [
+   40.6,
+   "Mainzer Landstraße"
+  ],
+  [
+   41.2,
+   "Platz der Republik"
+  ],
+  [
+   41.5,
+   "Friedrich-Ebert-Anlage"
+  ],
+  [
+   41.8,
+   "Messeturm"
+  ],
+  [
+   42.05,
+   "Zieleinlauf Festhalle"
+  ]
+ ]
+}
