@@ -1,5 +1,11 @@
 {
  "_info": "Sponsoren. Von Hand gepflegt (nicht vom täglichen Task). paypal = PayPal-Link (z. B. https://paypal.me/NAME), leer = Platzhalter. entries: date (JJJJ-MM-TT), amount (Euro), name (optional; leer = anonym). Rangliste und Summen rechnet build.py.",
  "paypal": "https://www.paypal.me/derhaeger",
- "entries": []
+ "entries": [
+  {
+   "date": "2026-10-09",
+   "amount": 0.08,
+   "name": "Stephanie"
+  }
+ ]
 }
