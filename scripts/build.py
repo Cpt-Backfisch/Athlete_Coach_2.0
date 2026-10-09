@@ -10,6 +10,8 @@ externen Skripte/CDNs auf der Seite.
 """
 import html
 import json
+import math
+import xml.etree.ElementTree as ET
 from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -841,6 +843,104 @@ def sponsors_html(cfg: dict) -> str:
     return btn + stats + rank + f'<h4>Alle Beiträge</h4><ul class="sl">{rows}</ul>'
 
 
+MARATHON_GPX = ROOT / "data" / "marathon_strecke.gpx"
+MARATHON_MAP = ROOT / "data" / "marathon_karte.json"
+MARATHON_PLAN = ROOT / "data" / "marathon_plan.json"
+MARATHON_KM = 42.195
+
+
+def haversine_km(a: tuple, b: tuple) -> float:
+    la1, lo1, la2, lo2 = map(math.radians, (a[0], a[1], b[0], b[1]))
+    d = math.sin((la2 - la1) / 2) ** 2 + math.cos(la1) * math.cos(la2) * math.sin((lo2 - lo1) / 2) ** 2
+    return 2 * 6371.0088 * math.asin(math.sqrt(d))
+
+
+def parse_min(s: str) -> float:
+    """'5:00' (min:ss) oder '3:37:00' (h:mm:ss) bzw. '10:10' (hh:mm) → Minuten."""
+    p = [int(x) for x in s.split(":")]
+    return p[0] * 60 + p[1] + p[2] / 60 if len(p) == 3 else p[0] + p[1] / 60
+
+
+def fmt_pace(minutes: float) -> str:
+    sec = round(minutes * 60)
+    return f"{sec // 60}:{sec % 60:02d}"
+
+
+def marathon_data() -> dict | None:
+    """Offizielle Strecke + Plan → Daten für die Seite. Kilometer und Tempo rechnet das Script."""
+    if not (MARATHON_GPX.exists() and MARATHON_MAP.exists() and MARATHON_PLAN.exists()):
+        return None
+    root = ET.parse(MARATHON_GPX).getroot()
+    pts = [(float(e.get("lat")), float(e.get("lon"))) for e in root.iter()
+           if e.tag.split("}")[-1] in ("rtept", "trkpt")]
+    cum = [0.0]
+    for a, b in zip(pts, pts[1:]):
+        cum.append(cum[-1] + haversine_km(a, b))
+    scale = MARATHON_KM / cum[-1]  # GPX-Länge auf die offizielle Distanz normieren
+    course = [[round(la, 5), round(lo, 5), round(c * scale, 3)] for (la, lo), c in zip(pts, cum)]
+    plan = json.loads(MARATHON_PLAN.read_text(encoding="utf-8"))
+    half = MARATHON_KM / 2
+    p1 = parse_min(plan["pace_first_half"])
+    total = parse_min(plan["target"])
+    p2 = (total - p1 * half) / (MARATHON_KM - half)
+    return {
+        "plan": plan, "p1": p1, "p2": p2, "total": total, "start": parse_min(plan["start"]),
+        "js": {"course": course, "map": {k: v for k, v in json.loads(MARATHON_MAP.read_text(encoding="utf-8")).items()
+                                         if not k.startswith("_")},
+               "places": plan["places"], "start": plan["start"], "date": plan["date"],
+               "p1": p1, "p2": p2, "total": total, "km": MARATHON_KM, "block": plan["block"]},
+    }
+
+
+def marathon_html(md: dict | None) -> str:
+    if not md:
+        return '<section class="card"><h2>FFM-Marathon-Plan</h2><p class="sub">Keine Daten.</p></section>'
+    pl = md["plan"]
+    d = date.fromisoformat(pl["date"])
+    half = md["p1"] * MARATHON_KM / 2
+    return f"""<section class="card mcard">
+ <h2>FFM-Marathon-Plan</h2>
+ <p class="sub">{html.escape(pl["name"])} · {WEEKDAYS[d.weekday()]}., {fmt_date(d)} · {html.escape(pl["block"])} · Ziel {html.escape(pl["goal_text"])}</p>
+ <div class="mclock" aria-live="polite">
+  <b id="mTime">{html.escape(pl["start"])}</b>
+  <div class="mwhere"><span id="mPlace">Start</span><em id="mMeta">km 0,0</em></div>
+ </div>
+ <div class="mseg" role="group" aria-label="Kartenausschnitt">
+  <button type="button" data-v="all" aria-pressed="true">Ganze Strecke</button>
+  <button type="button" data-v="city" aria-pressed="false">Innenstadt</button>
+ </div>
+ <div class="mmap"><svg id="mMap" viewBox="0 0 720 400" role="img" aria-label="Karte der Marathonstrecke mit Sebastians Position. Tippen auf die Strecke zeigt, wann er dort ist."></svg></div>
+ <p class="fine mhint">Tipp auf die Strecke, um zu sehen, wann er dort vorbeikommt.</p>
+ <noscript><p class="note">Die Karte braucht JavaScript.</p></noscript>
+ <div class="mrange">
+  <button type="button" class="mplay" id="mPlay" aria-label="Rennen abspielen"><svg viewBox="0 0 20 20"><path d="M5 3l12 7-12 7z"/></svg></button>
+  <input type="range" id="mSlider" min="0" max="300" step="0.5" value="0" aria-label="Uhrzeit am Renntag">
+ </div>
+ <div class="mticks" id="mTicks"></div>
+ <div class="mbtns">
+  <button type="button" id="mNow">Jetzt (am Renntag)</button>
+  <button type="button" data-go="start">Start</button>
+  <button type="button" data-go="half">Halbmarathon</button>
+  <button type="button" data-go="finish">Ziel</button>
+ </div>
+ <div class="mstart">
+  <label for="mStart">Startzeit über der Linie</label>
+  <div class="mstep">
+   <button type="button" id="mMinus" aria-label="Eine Minute früher">−</button>
+   <input id="mStart" type="text" value="{html.escape(pl["start"])}" inputmode="numeric" maxlength="5" autocomplete="off">
+   <button type="button" id="mPlus" aria-label="Eine Minute später">+</button>
+   <button type="button" id="mReset" class="mlink">Zurücksetzen</button>
+  </div>
+  <p class="fine" id="mStartNote">Geschätzt für {html.escape(pl["block"])}. Am Renntag auf die echte Startzeit stellen, dann verschiebt sich alles.</p>
+ </div>
+ <p class="fine">Tempo: {fmt_pace(md["p1"])} min/km bis zum Halbmarathon ({fmt_hms(round(half * 60))}), danach {fmt_pace(md["p2"])} min/km, Endzeit {html.escape(pl["target"])}. In der Nacht vor dem Rennen werden die Uhren eine Stunde zurückgestellt, alle Zeiten sind Winterzeit. Strecke: offizielle GPX-Datei des Veranstalters. Karte: Frankfurter Stadtteilgrenzen (Code for Germany), Main daraus abgeleitet, Wald und Parks vereinfacht. Live-Tracking am Renntag: <a href="https://www.frankfurt-marathon.com/">offizielle Marathon-App</a>.</p>
+</section>"""
+
+
+def marathon_js_data(md: dict | None) -> str:
+    return json.dumps(md["js"] if md else None, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+
+
 def main() -> None:
     store = json.loads(DATA.read_text(encoding="utf-8"))
     acts = store["activities"]
@@ -867,6 +967,8 @@ def main() -> None:
     scfg = (json.loads(SPONSORS.read_text(encoding="utf-8")) if SPONSORS.exists()
             else {"paypal": "", "entries": []})
 
+    md = marathon_data()
+
     page = TEMPLATE
     for k, v in {
         "{{YEAR}}": str(year),
@@ -892,6 +994,8 @@ def main() -> None:
         "{{R_BLOCKS}}": races_html(rd, now.date()),
         "{{R_NOTE}}": races_note(rcfg),
         "{{S_BODY}}": sponsors_html(scfg),
+        "{{M_BODY}}": marathon_html(md),
+        "{{M_DATA}}": marathon_js_data(md),
     }.items():
         page = page.replace(k, v)
     OUT.write_text(page, encoding="utf-8")
@@ -911,15 +1015,18 @@ TEMPLATE = """<!doctype html>
 :root{color-scheme:light;
  --bg:#fcfcfb;--card:#ffffff;--border:#e6e5e0;--text:#0b0b0b;--text-2:#52514e;--muted:#8a8984;
  --grid:#ecebe7;--axis:#c9c8c2;
- --run:#2a78d6;--bike:#eb6834;--swim:#1baf7a;--hike:#eda100;--other:#e87ba4;--partner:#eb6834;--pb:#7d5bd9}
+ --run:#2a78d6;--bike:#eb6834;--swim:#1baf7a;--hike:#eda100;--other:#e87ba4;--partner:#eb6834;--pb:#7d5bd9;
+ --map-land:#f4f3ee;--map-line:#dfddd5;--map-water:#bcd7e8;--map-water-ink:#5b89a3;--map-green:#dde9d4;--map-green-ink:#6f8a62}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
  --bg:#141413;--card:#1a1a19;--border:#2c2c2a;--text:#ffffff;--text-2:#c3c2b7;--muted:#8f8e86;
  --grid:#2a2a28;--axis:#4a4a46;
- --run:#3987e5;--bike:#d95926;--swim:#199e70;--hike:#c98500;--other:#d55181;--partner:#d95926;--pb:#a48bea}}
+ --run:#3987e5;--bike:#d95926;--swim:#199e70;--hike:#c98500;--other:#d55181;--partner:#d95926;--pb:#a48bea;
+ --map-land:#21211f;--map-line:#34342f;--map-water:#1f3f52;--map-water-ink:#7fb0cc;--map-green:#1f3326;--map-green-ink:#7fa58c}}
 :root[data-theme="dark"]{color-scheme:dark;
  --bg:#141413;--card:#1a1a19;--border:#2c2c2a;--text:#ffffff;--text-2:#c3c2b7;--muted:#8f8e86;
  --grid:#2a2a28;--axis:#4a4a46;
- --run:#3987e5;--bike:#d95926;--swim:#199e70;--hike:#c98500;--other:#d55181;--partner:#d95926;--pb:#a48bea}
+ --run:#3987e5;--bike:#d95926;--swim:#199e70;--hike:#c98500;--other:#d55181;--partner:#d95926;--pb:#a48bea;
+ --map-land:#21211f;--map-line:#34342f;--map-water:#1f3f52;--map-water-ink:#7fb0cc;--map-green:#1f3326;--map-green-ink:#7fa58c}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);
  font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
@@ -1062,6 +1169,42 @@ h4{font-size:13px;color:var(--text-2);margin:16px 0 4px;font-weight:600}
 .sr{width:18px;color:var(--muted);font-weight:700}.sd{width:84px;color:var(--text-2);font-size:13px}
 .sn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sv{font-weight:600;white-space:nowrap}
 ol.sl li:first-child .sr,ol.sl li:first-child .sv{color:var(--pb)}
+.mclock{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 14px;align-items:center;margin:4px 0 12px;
+ padding:10px 14px;border-radius:10px;background:var(--text);color:var(--bg)}
+.mclock b{font-size:44px;line-height:1;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.mwhere{min-width:0;display:flex;flex-direction:column}
+.mwhere span{font-size:17px;font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mwhere em{font-style:normal;font-size:13px;line-height:1.35;opacity:.75;font-variant-numeric:tabular-nums;height:2.7em;overflow:hidden;
+ display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+@media (max-width:480px){.mclock b{font-size:36px}.mwhere span{font-size:15px}.mwhere em{font-size:12px}}
+.mseg{display:flex;gap:2px;padding:3px;margin:0 0 8px;background:var(--bg);border:1px solid var(--border);border-radius:10px}
+.mseg button{flex:1;font:inherit;font-size:13px;font-weight:600;color:var(--text-2);background:none;border:0;
+ border-radius:7px;padding:6px 4px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mseg button[aria-pressed="true"]{background:var(--card);color:var(--text);box-shadow:0 0 0 1px var(--border)}
+.mmap{background:var(--map-land);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.mmap svg{display:block;width:100%;height:auto;cursor:crosshair;touch-action:manipulation}
+.mhint{margin:6px 0 12px}
+.mrange{display:flex;align-items:center;gap:10px}
+.mplay{flex:none;width:40px;height:40px;border-radius:50%;border:0;background:var(--pb);color:var(--card);cursor:pointer;display:grid;place-items:center}
+.mplay svg{width:16px;height:16px;fill:currentColor}
+#mSlider{flex:1;min-width:0;accent-color:var(--pb);height:30px;margin:0}
+.mticks{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums;padding:0 0 0 50px}
+.mbtns{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.mbtns button,.mstep button{font:inherit;font-size:13px;font-weight:600;color:var(--text);background:var(--bg);
+ border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer}
+.mstart{margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+.mstart label{display:block;font-size:13px;color:var(--text-2);margin-bottom:6px}
+.mstep{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mstep button{min-width:38px;font-size:16px;padding:5px 10px}
+.mstep .mlink{min-width:0;font-size:13px}
+#mStart{font:inherit;font-size:18px;font-weight:700;width:4.2em;text-align:center;padding:4px 6px;border:1px solid var(--border);
+ border-radius:8px;background:var(--card);color:var(--text);font-variant-numeric:tabular-nums}
+.mstart .fine{margin-top:6px}
+.mcard .fine a{color:var(--text-2)}
+.mcard button:focus-visible,#mStart:focus-visible,#mSlider:focus-visible{outline:2px solid var(--pb);outline-offset:2px}
+.tabs a{white-space:nowrap}
+@media (max-width:560px){.tabs{flex-wrap:wrap}.tabs a{flex:1 1 auto;padding:8px 6px;font-size:13px}}
+@media (prefers-reduced-motion:reduce){.mpulse{display:none}}
 footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
 @media (max-width:480px){.mini b{font-size:16px}.kpi{padding:10px}.kpi b{font-size:18px;white-space:nowrap}.kpi span{font-size:12px}.kpis{gap:8px}}
 </style>
@@ -1075,6 +1218,7 @@ footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
  <a href="#wettkaempfe" role="tab" data-tab="wettkaempfe" aria-selected="false">Wettkämpfe</a>
  <a href="#challenges" role="tab" data-tab="challenges" aria-selected="false">Challenges</a>
  <a href="#team" role="tab" data-tab="team" aria-selected="false">Team</a>
+ <a href="#marathon" role="tab" data-tab="marathon" aria-selected="false">FFM-Marathon-Plan</a>
 </nav>
 
 <div class="panel" id="p-training" data-panel="training">
@@ -1135,6 +1279,10 @@ footer{color:var(--muted);font-size:12px;margin-top:20px;text-align:center}
  <p class="sub">Wer das Training unterstützt</p>
  {{S_BODY}}
 </section>
+</div>
+
+<div class="panel" id="p-marathon" data-panel="marathon">
+{{M_BODY}}
 </div>
 
 <footer>Daten: Strava · aktualisiert {{BUILT}} Uhr</footer>
@@ -1212,6 +1360,142 @@ document.querySelectorAll('svg.cc').forEach(function(sv){
   t.textContent=parts.join(' · ');t.style.opacity=1;var x=e.clientX+12,w=t.offsetWidth;
   if(x+w>innerWidth-8)x=e.clientX-w-12;if(x<8)x=8;t.style.left=x+'px';t.style.top=(e.clientY-40)+'px';});
  h.addEventListener('pointerleave',function(){t.style.opacity=0;xh.style.opacity=0;});});})();
+</script>
+<script id="mdata" type="application/json">{{M_DATA}}</script>
+<script>
+(function(){ /* FFM-Marathon-Plan: Karte, Rennuhr, Zeitregler, Startzeit */
+var D=JSON.parse(document.getElementById('mdata').textContent);var svg=document.getElementById('mMap');
+if(!D||!svg)return;
+var C=D.course,MAP=D.map,L=D.km,H=L/2,P1=D.p1,P2=D.p2,TT=D.total,T0=600,NS='http://www.w3.org/2000/svg';
+function $(id){return document.getElementById(id);}
+function pad(n){return (n<10?'0':'')+n;}
+function hhmm(m){m=Math.round(m);return pad(Math.floor(m/60)%24)+':'+pad(m%60);}
+function dur(m){var s=Math.round(m*60);return Math.floor(s/3600)+':'+pad(Math.floor(s%3600/60));}
+function durS(m){var s=Math.round(m*60);return Math.floor(s/3600)+':'+pad(Math.floor(s%3600/60))+':'+pad(s%60);}
+function pace(p){var s=Math.round(p*60);return Math.floor(s/60)+':'+pad(s%60);}
+function kmS(k){return k.toFixed(1).replace('.',',');}
+function parseHM(s){var a=String(s).trim().split(':').map(Number);return (a.length===2&&!isNaN(a[0])&&!isNaN(a[1])&&a[1]<60)?a[0]*60+a[1]:null;}
+var DEF=parseHM(D.start),ST=DEF;
+try{var sv0=localStorage.getItem('mfp-start');if(sv0&&parseHM(sv0)!=null)ST=parseHM(sv0);}catch(e){}
+function elapsed(d){return d<=H?P1*d:P1*H+P2*(d-H);}
+function distAt(t){return t<=0?0:t>=TT?L:(t<=P1*H?t/P1:H+(t-P1*H)/P2);}
+function posAt(km){var lo=0,hi=C.length-1;while(hi-lo>1){var mid=(lo+hi)>>1;if(C[mid][2]<km)lo=mid;else hi=mid;}
+ var a=C[lo],b=C[hi],u=Math.max(0,Math.min(1,(km-a[2])/((b[2]-a[2])||1)));return [a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u];}
+var S=[];for(var k=0;k<L;k+=0.05){var q0=posAt(k);S.push([k,q0[0],q0[1]]);}var qe=posAt(L);S.push([L,qe[0],qe[1]]);
+var COS=Math.cos(50.1*Math.PI/180);
+function distM(a,b,c,d){return Math.hypot((a-c)*111195,(b-d)*111195*COS);}
+function placeAt(km){var n=D.places[0][1];D.places.forEach(function(p){if(km>=p[0])n=p[1];});return n;}
+function passesNear(lat,lon,r){var runs=[],best=null;
+ S.forEach(function(p){var d=distM(p[1],p[2],lat,lon);if(d<r){if(!best||d<best.d)best={d:d,km:p[0]};}else if(best){runs.push(best);best=null;}});
+ if(best)runs.push(best);var out=[];
+ runs.forEach(function(x){var l=out[out.length-1];if(l&&x.km-l.km<1){if(x.d<l.d)out[out.length-1]=x;}else out.push(x);});
+ return out.map(function(x){return x.km;});}
+/* Karte */
+var W=720,Hh=400,view='all',vc=null,allCam=null,cityCam=null,lat0=50.105,lon0=8.62;
+function proj(lat,lon){return [(lon-lon0)*COS,-(lat-lat0)];}
+function camFor(pts,px,pt,pb){var xs=[],ys=[];pts.forEach(function(c){var p=proj(c[0],c[1]);xs.push(p[0]);ys.push(p[1]);});
+ var x0=Math.min.apply(0,xs),x1=Math.max.apply(0,xs),y0=Math.min.apply(0,ys),y1=Math.max.apply(0,ys);
+ var s=Math.min((W-2*px)/(x1-x0),(Hh-pt-pb)/(y1-y0));return {x:(x0+x1)/2,y:(y0+y1)/2-(pt-pb)/2/s,s:s};}
+function cams(){allCam=camFor(C.concat([[50.1080,8.5370],[50.0990,8.7000]]),14,14,14);
+ cityCam=camFor(C.filter(function(c){return c[2]<13.9||c[2]>35.8;}),18,18,18);vc=view==='all'?allCam:cityCam;}
+function P(lat,lon){var p=proj(lat,lon);return [W/2+(p[0]-vc.x)*vc.s,Hh/2+(p[1]-vc.y)*vc.s];}
+function pathD(pts,close){return pts.map(function(p,i){var q=P(p[0],p[1]);return (i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1);}).join('')+(close?'Z':'');}
+function el(t,a,txt){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e;}
+var clip=el('clipPath',{id:'mForest'}),clipP=el('path',{});clip.appendChild(clipP);var defs=el('defs',{});defs.appendChild(clip);
+var gLand=el('rect',{x:0,y:0,fill:'var(--map-land)'}),gForest=el('g',{'clip-path':'url(#mForest)',fill:'var(--map-green)'}),
+ gParks=el('g',{fill:'var(--map-green)',stroke:'var(--map-green)','stroke-width':6,'stroke-linejoin':'round'}),
+ gDist=el('g',{fill:'none',stroke:'var(--map-line)','stroke-width':1}),
+ gRiver=el('path',{fill:'none',stroke:'var(--map-water)','stroke-linecap':'round','stroke-linejoin':'round'}),
+ gRiverL=el('text',{'font-size':13,'font-style':'italic',fill:'var(--map-water-ink)','text-anchor':'middle','letter-spacing':'2'},'Main'),
+ gLab=el('g',{'font-weight':600,fill:'var(--muted)','letter-spacing':'1.2','text-anchor':'middle'}),
+ gRoute=el('path',{fill:'none',stroke:'var(--axis)','stroke-width':4,'stroke-linecap':'round','stroke-linejoin':'round'}),
+ gDone=el('path',{fill:'none',stroke:'var(--pb)','stroke-width':5,'stroke-linecap':'round','stroke-linejoin':'round'}),
+ gKm=el('g',{'font-size':11,fill:'var(--text)'}),gLm=el('g',{'font-size':12,fill:'var(--text)'}),gTap=el('g',{}),gRun=el('g',{});
+var pulse=el('circle',{r:16,fill:'var(--pb)',opacity:.25,'class':'mpulse'}),dot=el('circle',{r:8,fill:'var(--pb)',stroke:'var(--card)','stroke-width':3});
+gRun.appendChild(pulse);gRun.appendChild(dot);
+[defs,gLand,gForest,gParks,gDist,gRiver,gRiverL,gLab,gRoute,gDone,gKm,gLm,gTap,gRun].forEach(function(g){svg.appendChild(g);});
+if(pulse.animate)pulse.animate([{r:10,opacity:.45},{r:22,opacity:0}],{duration:1600,iterations:Infinity});
+function vis(s){return s.indexOf(view==='all'?'a':'c')>=0;}
+var curKm=0,tap=null;
+function draw(){
+ gLand.setAttribute('width',W);gLand.setAttribute('height',Hh);clipP.setAttribute('d',pathD(MAP.forest_edge,true));
+ gForest.innerHTML='';gDist.innerHTML='';gParks.innerHTML='';gLab.innerHTML='';gKm.innerHTML='';gLm.innerHTML='';
+ MAP.districts.forEach(function(d){d.rings.forEach(function(r){var pd=pathD(r,true);gDist.appendChild(el('path',{d:pd}));
+  if(MAP.forest_districts.indexOf(d.name)>=0)gForest.appendChild(el('path',{d:pd}));});});
+ MAP.parks.forEach(function(r){gParks.appendChild(el('path',{d:pathD(r,true)}));});
+ gRiver.setAttribute('d',pathD(MAP.river));gRiver.setAttribute('stroke-width',Math.max(6,170*vc.s/111195));
+ var rl=view==='all'?P(50.0888,8.6290):P(50.1035,8.6745);gRiverL.setAttribute('x',rl[0]);gRiverL.setAttribute('y',rl[1]+(view==='all'?16:20));
+ gLab.setAttribute('font-size',W<520?10:12);
+ MAP.labels.filter(function(l){return vis(l[3]);}).forEach(function(l){var q=P(l[1],l[2]);gLab.appendChild(el('text',{x:q[0],y:q[1]},l[0].toUpperCase()));});
+ MAP.green_labels.filter(function(l){return vis(l[3]);}).forEach(function(l){var q=P(l[1],l[2]);
+  gLab.appendChild(el('text',{x:q[0],y:q[1],fill:'var(--map-green-ink)','font-style':'italic','font-weight':500,'letter-spacing':'.5'},l[0]));});
+ gRoute.setAttribute('d',pathD(S.map(function(s){return [s[1],s[2]];})));
+ var kms=view==='all'?[5,10,15,20,25,30,35,40]:[2,4,5,6,7,8,9,10,11,12,13,38,39,40];
+ kms.forEach(function(k){var p=posAt(k),q=P(p[0],p[1]);
+  gKm.appendChild(el('circle',{cx:q[0],cy:q[1],r:3.5,fill:'var(--card)',stroke:'var(--text)','stroke-width':1.5}));
+  gKm.appendChild(el('text',{x:q[0]+5,y:q[1]-5,'font-weight':700},String(k)));});
+ MAP.landmarks.filter(function(l){return vis(l[3])&&!(W<520&&view==='all'&&l[0]!=='Bf. Höchst');}).forEach(function(l){var q=P(l[1],l[2]);
+  gLm.appendChild(el('rect',{x:q[0]-3.5,y:q[1]-3.5,width:7,height:7,fill:'var(--text)',transform:'rotate(45 '+q[0]+' '+q[1]+')'}));
+  gLm.appendChild(el('text',{x:q[0]+8,y:q[1]+4,stroke:'var(--map-land)','stroke-width':3.5,'stroke-linejoin':'round',fill:'none'},l[0]));
+  gLm.appendChild(el('text',{x:q[0]+8,y:q[1]+4},l[0]));});
+ drawTap();drawRun();}
+function drawRun(){if(!vc)return;var done=[];S.forEach(function(s){if(s[0]<=curKm)done.push([s[1],s[2]]);});var p=posAt(curKm);done.push(p);
+ gDone.setAttribute('d',done.length>1?pathD(done):'');var q=P(p[0],p[1]);
+ dot.setAttribute('cx',q[0]);dot.setAttribute('cy',q[1]);pulse.setAttribute('cx',q[0]);pulse.setAttribute('cy',q[1]);}
+function drawTap(){gTap.innerHTML='';if(!tap)return;var q=P(tap.lat,tap.lon);
+ gTap.appendChild(el('circle',{cx:q[0],cy:q[1],r:12,fill:'none',stroke:'var(--text)','stroke-width':2,'stroke-dasharray':'3 3'}));}
+function size(force){var w=Math.round(svg.getBoundingClientRect().width);if(!w)return;
+ var nh=Math.round(w*(view==='all'?(w<520?0.8:0.56):(w<520?1.05:0.62)));
+ if(force||w!==W||nh!==Hh||!vc){W=w;Hh=nh;svg.setAttribute('viewBox','0 0 '+W+' '+Hh);cams();draw();}}
+document.querySelectorAll('.mseg button').forEach(function(b){b.addEventListener('click',function(){view=b.dataset.v;
+ document.querySelectorAll('.mseg button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});size(true);});});
+if(window.ResizeObserver)new ResizeObserver(function(){size(false);}).observe(svg);else addEventListener('resize',function(){size(false);});
+/* Uhr und Regler */
+var sl=$('mSlider');
+$('mTicks').innerHTML='';[0,60,120,180,240,300].forEach(function(m){var s=document.createElement('span');s.textContent=hhmm(T0+m);$('mTicks').appendChild(s);});
+function update(){var clock=T0+(+sl.value),t=clock-ST;curKm=distAt(t);$('mTime').textContent=hhmm(clock);var place,meta;
+ if(t<0){place='Wartet im '+D.block;meta='Start in ca. '+Math.ceil(-t)+' Min.';}
+ else if(t>=TT){place='Im Ziel';meta='Endzeit '+durS(TT)+' · seit '+Math.round(t-TT)+' Min. im Ziel';}
+ else{place=placeAt(curKm);meta='km '+kmS(curKm)+' · Laufzeit '+dur(t)+' · '+pace(curKm<=H?P1:P2)+' min/km';}
+ if(tap&&tap.passes.length>1&&t>=0&&t<TT){var i=-1;tap.passes.forEach(function(k,j){if(Math.abs(k-curKm)<0.15)i=j;});
+  if(i>=0)meta+=' · '+(i+1)+'. von '+tap.passes.length+' Durchgängen, außerdem '+tap.passes.filter(function(_,j){return j!==i;}).map(function(k){return hhmm(ST+elapsed(k));}).join(', ');}
+ $('mPlace').textContent=place;$('mMeta').textContent=meta;drawRun();}
+function setClock(m,keep){if(!keep){tap=null;drawTap();}else drawTap();sl.value=Math.max(0,Math.min(300,m-T0));update();}
+sl.addEventListener('input',function(){stop();tap=null;drawTap();update();});
+document.querySelectorAll('.mbtns [data-go]').forEach(function(b){b.addEventListener('click',function(){stop();var g=b.dataset.go;
+ setClock(g==='start'?ST:g==='half'?ST+elapsed(H):ST+TT);});});
+svg.addEventListener('click',function(ev){var r=svg.getBoundingClientRect(),x=(ev.clientX-r.left)*W/r.width,y=(ev.clientY-r.top)*Hh/r.height,best=null;
+ S.forEach(function(s){var q=P(s[1],s[2]),d=Math.hypot(q[0]-x,q[1]-y);if(!best||d<best.d)best={d:d,s:s};});
+ if(!best||best.d>28){tap=null;drawTap();return;}var ps=passesNear(best.s[1],best.s[2],90);if(!ps.length)return;
+ var idx=-1;ps.forEach(function(k,j){if(idx<0&&k>curKm+0.3)idx=j;});if(idx<0)idx=0;
+ tap={lat:best.s[1],lon:best.s[2],passes:ps};stop();setClock(ST+elapsed(ps[idx]),true);});
+function berlinNow(){try{var f=new Intl.DateTimeFormat('de-DE',{timeZone:'Europe/Berlin',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date());
+ var g=function(k){return +f.filter(function(x){return x.type===k;})[0].value;};return {d:g('year')+'-'+pad(g('month'))+'-'+pad(g('day')),m:g('hour')*60+g('minute')};}catch(e){return null;}}
+var live=null,nb=$('mNow');
+nb.addEventListener('click',function(){stop();var n=berlinNow();
+ if(n&&n.d===D.date){setClock(n.m);clearInterval(live);live=setInterval(function(){var k=berlinNow();if(k)setClock(k.m);},30000);nb.textContent='Live aktiv';}
+ else{nb.textContent='Erst am Renntag live';setTimeout(function(){nb.textContent='Jetzt (am Renntag)';},2500);}});
+var raf=null,last=0,pb=$('mPlay');
+function icon(play){pb.firstChild.innerHTML=play?'<path d="M5 3l12 7-12 7z"/>':'<path d="M5 3h3.5v14H5zM11.5 3H15v14h-3.5z"/>';pb.setAttribute('aria-label',play?'Rennen abspielen':'Pause');}
+function stop(){if(raf){cancelAnimationFrame(raf);raf=null;}icon(true);}
+function step(ts){var dt=last?ts-last:16;last=ts;var end=Math.min(300,ST+TT-T0+8),v=+sl.value+dt/1000*16;
+ if(v>=end){sl.value=end;update();stop();return;}sl.value=v;update();raf=requestAnimationFrame(step);}
+pb.addEventListener('click',function(){if(raf){stop();return;}clearInterval(live);tap=null;drawTap();
+ if(+sl.value>=ST+TT-T0)sl.value=Math.max(0,ST-T0-3);
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches){setClock(ST+TT);return;}
+ last=0;icon(false);raf=requestAnimationFrame(step);});
+/* Startzeit */
+var si=$('mStart');
+function setStart(m){m=Math.max(T0-10,Math.min(T0+60,m));var sh=m-ST;ST=m;si.value=hhmm(m);
+ try{localStorage.setItem('mfp-start',hhmm(m));}catch(e){}
+ $('mStartNote').textContent=m===DEF?'Geschätzt für '+D.block+'. Am Renntag auf die echte Startzeit stellen, dann verschiebt sich alles.':'Startzeit angepasst. Im Ziel um ca. '+hhmm(m+TT)+' Uhr.';
+ sl.value=Math.max(0,Math.min(300,+sl.value+sh));update();}
+si.addEventListener('change',function(){var m=parseHM(si.value);if(m==null){si.value=hhmm(ST);return;}setStart(m);});
+$('mMinus').addEventListener('click',function(){setStart(ST-1);});
+$('mPlus').addEventListener('click',function(){setStart(ST+1);});
+$('mReset').addEventListener('click',function(){setStart(DEF);});
+size(true);si.value=hhmm(ST);setClock(ST+elapsed(6.0));
+var n=berlinNow();if(n&&n.d===D.date&&n.m>=T0&&n.m<=T0+300)nb.click();})();
 </script>
 </body>
 </html>
