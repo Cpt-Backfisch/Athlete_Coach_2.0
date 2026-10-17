@@ -6,6 +6,11 @@
    "date": "2026-10-09",
    "amount": 0.08,
    "name": "Stephanie"
+  },
+  {
+   "date": "2026-10-17",
+   "amount": 0.1,
+   "name": "Florian"
   }
  ]
 }
