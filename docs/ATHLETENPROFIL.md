@@ -1,6 +1,6 @@
 # Athletenprofil Sebastian
 
-> Zuletzt aktualisiert: 04.10.2026. Zentrale Quelle für Ziele, Wettkampfzeiten, Leistungswerte und Setup.
+> Zuletzt aktualisiert: 25.10.2026. Zentrale Quelle für Ziele, Wettkampfzeiten, Leistungswerte und Setup.
 > Claude liest diese Datei vor jedem Coaching-Gespräch und hält sie danach aktuell.
 > Offizielle Wettkampfzeiten aus dieser Datei gelten auch für das Dashboard.
 
@@ -11,14 +11,14 @@ Halbmarathon und die 70.3 Kraichgau als Zwischenziele. Die Zielzeit für den Iro
 
 | Rennen | Termin | Ziel | Stand |
 |---|---|---|---|
-| Frankfurt Marathon | 25.10.2026 | Patricks Berlin-Zeit von 3:37:34 schlagen (unter 5:09 min/km) | Zwischenziel |
+| Frankfurt Marathon | 25.10.2026 | Patricks Berlin-Zeit von 3:37:34 schlagen (unter 5:09 min/km) | ✅ erreicht: 3:35:35 (−1:59) |
 | Frankfurt Halbmarathon | 21.03.2027 | neue Bestzeit (bisher 1:36:10) | Zwischenziel |
 | 70.3 Ironman Kraichgau | 23.05.2027 | Patrick schlagen; Vorbereitungswettkampf für Ironman Frankfurt | Patrick startet ebenfalls |
 | Ironman Frankfurt | 27.06.2027 | Zielzeit offen | Hauptziel |
 
 Trainingsrahmen: 5-Phasen-Jahresplan, Spitze bei 15 bis 20 Stunden pro Woche.
 
-Der Trainingsplan bis zum Frankfurt Marathon wird gerade neu vorbereitet und steht deshalb noch nicht hier.
+Der Frankfurt Marathon ist gelaufen (Ergebnis unten); ein Trainingsplan für den nächsten Block steht noch nicht hier.
 
 ## Wettkampfhistorie Triathlon
 
@@ -38,10 +38,12 @@ Die Frankfurter Mitteldistanz war 2026 um 16:52 schneller als 2025; die Hamburge
 
 ## Halbmarathon und Marathon
 
-Der Halbmarathon wurde von 2:00:17 (2023) auf 1:36:10 (2026) um 24:07 verbessert.
+Der Halbmarathon wurde von 2:00:17 (2023) auf 1:36:10 (2026) um 24:07 verbessert. Marathon-Bestzeit:
+3:35:35 (Frankfurt, 25.10.2026), 4:15:25 schneller als Hamburg 2015.
 
 | Datum | Rennen | Zeit | Pace (min/km) |
 |---|---|---|---|
+| 25.10.2026 | Frankfurt Marathon | 3:35:35 | 5:06 |
 | 26.04.2026 | Hamburg Halbmarathon | 1:36:10 | 4:34 |
 | 22.03.2026 | Frankfurt Halbmarathon | 1:38:57 | 4:39 |
 | 16.03.2025 | Frankfurt Halbmarathon | 1:40:30 | 4:43 |
@@ -49,6 +51,14 @@ Der Halbmarathon wurde von 2:00:17 (2023) auf 1:36:10 (2026) um 24:07 verbessert
 | 28.04.2024 | Hamburg Halbmarathon | 1:58:53 | 5:38 |
 | 19.03.2023 | Frankfurt Halbmarathon | 2:00:17 | 5:42 |
 | 26.04.2015 | Hamburg Marathon | 7:51:00 | 11:10 (errechnet) |
+
+Frankfurt Marathon 2026 – Auswertung (Uhrdaten aus Strava, Konfidenz moderat):
+- Platz 4.880 von 18.167 gesamt, 4.342 von 13.922 Männern (offizielle Ergebnis-App)
+- Ø HF 160, max. 173 bpm; auf km 2–6 163–167 bpm, also zu heiß angegangen
+- Zweite Hälfte langsamer: Pace von ca. 4:55–5:00 auf 5:10–5:18 (km 28–38), Laufleistung von ca. 400 auf ca. 345 W,
+  bei flacher HF → Grenze waren Beine/Energie, nicht der Kreislauf; letzte 3 km wieder 5:02–5:04
+- Gemessen an der HM-Bestzeit (1:36:10) wären ca. 3:20–3:25 möglich (Riegel-Formel); Lücke = Marathon-Ausdauer
+  (wenige Läufe über 30 km in der Vorbereitung)
 
 ## Vergleich mit Patrick
 
@@ -67,7 +77,8 @@ ist Sebastian jeweils vorn.
 Differenz = Sebastian minus Patrick, Minus heißt Sebastian ist schneller. 2023 (Hamburg Kurzdistanz):
 3:02:30 gegen 2:28:49, Differenz +33:41, ohne Splits.
 
-Marathon: Patrick ist im September 2026 in Berlin 3:37:34 gelaufen.
+Marathon: Patrick ist im September 2026 in Berlin 3:37:34 gelaufen; Sebastian am 25.10.2026 in Frankfurt
+3:35:35, also 1:59 schneller.
 
 ## Leistungswerte
 
@@ -101,7 +112,6 @@ nicht die Pace-Z2. Beispiel 03.10.2026: 5:31 min/km bei Ø 142 bpm.
 
 Diese Punkte braucht Claude für ein belastbares Coaching; die ersten drei bringen am meisten.
 
-- [ ] Frankfurt Marathon: Trainings-, Pacing- und Verpflegungsplan (wird neu vorbereitet)
 - [ ] Max-HF per Test, Schwellen-HF gegen Garmin-Wert (170 bpm) prüfen
 - [ ] Ironman Frankfurt: Zielzeit
 - [ ] Rad: FTP-Test auf dem Kickr Core

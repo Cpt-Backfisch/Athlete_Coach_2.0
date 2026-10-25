@@ -1,6 +1,6 @@
 # Status & nächste Schritte
 
-> Zuletzt aktualisiert: 09.10.2026 (Tab FFM-Marathon-Plan). Diese Datei am Ende jeder Arbeitssitzung aktualisieren
+> Zuletzt aktualisiert: 25.10.2026 (Frankfurt Marathon eingetragen). Diese Datei am Ende jeder Arbeitssitzung aktualisieren
 > (was erledigt wurde, was als Nächstes kommt, neue Entscheidungen).
 
 ## Aktueller Stand
@@ -25,7 +25,7 @@
 - ✅ Nicos Monatsstände Jan–Sep 2026 eingetragen (779,9 km bis 30.09.); nächster Stand Ende Oktober
 - ✅ **Tab „FFM-Marathon-Plan"** (09.10.2026): Karte der offiziellen Strecke, Rennuhr, Zeitregler, Tippen auf die Strecke,
   einstellbare Startzeit (pro Besucher). Annahmen: Start 10:10 (Block 3), 5:00 min/km bis HM, danach 5:17 → 3:37:00.
-  Daten: `data/marathon_strecke.gpx`, `data/marathon_karte.json`, `data/marathon_plan.json`. Nach dem Rennen: Tab entfernen oder ins Ergebnis umbauen
+  Daten: `data/marathon_strecke.gpx`, `data/marathon_karte.json`, `data/marathon_plan.json`. Rennen am 25.10.2026 gelaufen (3:35:35) → offen: Tab entfernen oder ins Ergebnis umbauen (Sebastian entscheidet)
 - ✅ Täglicher Task „athlete.coach Dashboard-Update", 21:59 Uhr, folgt [`UPDATE.md`](UPDATE.md)
 - ✅ **GitHub Pages** ist aktiv: `https://cpt-backfisch.github.io/Athlete_Coach_2.0/` (von Sebastian bestätigt, 05.10.2026)
 - ✅ Täglicher Task läuft: automatische Commits „Update …" am 05.10. und 06.10.2026 bestätigt
@@ -80,3 +80,4 @@
 | 09.10.2026 | Strecke aus offizieller GPX des Veranstalters; Karte selbst gezeichnet aus Stadtteilgrenzen (Code for Germany), keine Kartenkacheln |
 | 09.10.2026 | Fünf Tabs: am Handy rutscht der fünfte in eine zweite Reihe – so gewünscht |
 | 09.10.2026 | Startzeit auf der Seite nur pro Besucher (Browser-Speicher); zentrale Änderung = `start` in `data/marathon_plan.json` + build |
+| 25.10.2026 | Frankfurt Marathon: offizielle Zeit 3:35:35 (Screenshot Ergebnis-App) in `races.json` und Athletenprofil; ersetzt den vorläufigen Uhr-Wert 3:35:34 |
