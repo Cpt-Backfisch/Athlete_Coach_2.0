@@ -17,7 +17,7 @@
   {"date": "2026-05-01", "name": "Eschborn–Frankfurt (96 km)", "discipline": "rad", "result": "3:43:56", "source": "uhr"},
   {"date": "2026-07-12", "name": "Hamburg Kurzdistanz", "discipline": "tri_kurz", "result": "2:29:35", "source": "offiziell"},
   {"date": "2026-08-02", "name": "Frankfurt Mitteldistanz", "discipline": "tri_mittel", "result": "4:38:25", "source": "offiziell"},
-  {"date": "2026-10-25", "name": "Frankfurt Marathon", "discipline": "marathon", "result": "3:35:34", "source": "uhr", "target": "3:37:34", "beat": true},
+  {"date": "2026-10-25", "name": "Frankfurt Marathon", "discipline": "marathon", "result": "3:35:35", "source": "offiziell", "target": "3:37:34", "beat": true},
   {"date": "2027-03-21", "name": "Frankfurt Halbmarathon", "discipline": "hm", "target": "pb"},
   {"date": "2027-05-23", "name": "70.3 Ironman Kraichgau", "discipline": "tri_mittel"},
   {"date": "2027-06-27", "name": "Ironman Frankfurt", "discipline": "tri_lang"}
