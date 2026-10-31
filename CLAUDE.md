@@ -14,7 +14,8 @@ Datenbank, keine API-Schlüssel.
 | Dashboard aktualisieren („aktualisier mein Dashboard", täglicher Task) | `docs/UPDATE.md` – genau befolgen |
 | Seite/Diagramme ändern oder erweitern | `docs/DESIGN.md` + `scripts/build.py` |
 | Nicos km für die 1000-km-Challenge eintragen | `docs/CHALLENGE.md` |
-| Coaching, Ziele, Wettkampfzeiten, Leistungswerte | `docs/ATHLETENPROFIL.md` |
+| Coaching, Ziele, Wettkampfzeiten | `docs/ATHLETENPROFIL.md` |
+| Leistungswerte, Zonen, Equipment, Trainingsplan, Feedback, Rennanalysen | **privates** Repo `Cpt-Backfisch/athlete_private_data` (dort `CLAUDE.md`) |
 | Wettkampf/Ergebnis/Zielzeit fürs Dashboard eintragen | `data/races.json` (Format im Feld `_info`; Zeiten wie im Athletenprofil) |
 | Sponsor-Beitrag eintragen („Sponsor: Name, Betrag, Datum“ oder PayPal-Screenshot; **nur Vorname**) / PayPal-Link setzen | `data/sponsors.json` (Format im Feld `_info`), danach `build.py`, direkt auf `main` |
 
@@ -50,9 +51,11 @@ screenshotten (Chromium unter `/opt/pw-browsers/chromium`).
    und Sebastians OK einholen, dann auf `main` pushen. Commits logisch trennen.
 7. **Am Ende jeder Arbeitssitzung `docs/STATUS.md` aktualisieren** (Stand, nächste Schritte,
    Entscheidungen ins Log). Architektur-Änderungen zusätzlich in `docs/ARCHITEKTUR.md`.
-8. **`docs/ATHLETENPROFIL.md` ist die Hauptquelle** für Ziele, Wettkampfzeiten und Leistungswerte (das Doc in der
-   Claude-App wird nicht mehr gepflegt). Vor jedem Coaching-Gespräch lesen; danach Änderungen Sebastian kurz zeigen
-   und direkt auf `main` pushen (kein Screenshot nötig). Der tägliche Update-Task ändert die Datei **nicht**.
+8. **`docs/ATHLETENPROFIL.md` ist die öffentliche Hauptquelle** für Ziele, Rennkalender und offizielle Wettkampfzeiten
+   (das Doc in der Claude-App wird nicht mehr gepflegt). **Leistungs- und Gesundheitsdaten** (Gewicht, HF, Zonen, FTP,
+   Schlaf, Beschwerden, Feedback) gehören ausschließlich ins private Repo `Cpt-Backfisch/athlete_private_data`.
+   Vor jedem Coaching-Gespräch beide lesen; danach Änderungen Sebastian kurz zeigen und direkt auf `main` pushen
+   (kein Screenshot nötig). Der tägliche Update-Task ändert keine der beiden Dateien.
 9. Die alte App (Repo `athlete-coach`) ist **nicht** Teil dieses Projekts und wird nicht angefasst.
 
 ## Zusammenarbeit mit Sebastian

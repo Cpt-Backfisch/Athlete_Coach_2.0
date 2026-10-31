@@ -1,8 +1,10 @@
 # Athletenprofil Sebastian
 
-> Zuletzt aktualisiert: 25.10.2026. Zentrale Quelle für Ziele, Wettkampfzeiten, Leistungswerte und Setup.
+> Zuletzt aktualisiert: 31.10.2026. Öffentliche Quelle für Ziele, Rennkalender und offizielle Wettkampfzeiten.
 > Claude liest diese Datei vor jedem Coaching-Gespräch und hält sie danach aktuell.
 > Offizielle Wettkampfzeiten aus dieser Datei gelten auch für das Dashboard.
+> Leistungswerte, Zonen, Equipment, Trainingsplan, Feedback und Rennanalysen liegen im **privaten** Repo
+> `Cpt-Backfisch/athlete_private_data` – nie hier eintragen.
 
 ## Ziele und Rennen
 
@@ -18,7 +20,7 @@ Halbmarathon und die 70.3 Kraichgau als Zwischenziele. Die Zielzeit für den Iro
 
 Trainingsrahmen: 5-Phasen-Jahresplan, Spitze bei 15 bis 20 Stunden pro Woche.
 
-Der Frankfurt Marathon ist gelaufen (Ergebnis unten); ein Trainingsplan für den nächsten Block steht noch nicht hier.
+Der Frankfurt Marathon ist gelaufen (Ergebnis unten). Der Trainingsplan liegt im privaten Repo.
 
 ## Wettkampfhistorie Triathlon
 
@@ -52,13 +54,7 @@ Der Halbmarathon wurde von 2:00:17 (2023) auf 1:36:10 (2026) um 24:07 verbessert
 | 19.03.2023 | Frankfurt Halbmarathon | 2:00:17 | 5:42 |
 | 26.04.2015 | Hamburg Marathon | 7:51:00 | 11:10 (errechnet) |
 
-Frankfurt Marathon 2026 – Auswertung (Uhrdaten aus Strava, Konfidenz moderat):
-- Platz 4.880 von 18.167 gesamt, 4.342 von 13.922 Männern (offizielle Ergebnis-App)
-- Ø HF 160, max. 173 bpm; auf km 2–6 163–167 bpm, also zu heiß angegangen
-- Zweite Hälfte langsamer: Pace von ca. 4:55–5:00 auf 5:10–5:18 (km 28–38), Laufleistung von ca. 400 auf ca. 345 W,
-  bei flacher HF → Grenze waren Beine/Energie, nicht der Kreislauf; letzte 3 km wieder 5:02–5:04
-- Gemessen an der HM-Bestzeit (1:36:10) wären ca. 3:20–3:25 möglich (Riegel-Formel); Lücke = Marathon-Ausdauer
-  (wenige Läufe über 30 km in der Vorbereitung)
+Frankfurt Marathon 2026: Platz 4.880 von 18.167 gesamt, 4.342 von 13.922 Männern (offizielle Ergebnis-App).
 
 ## Vergleich mit Patrick
 
@@ -79,45 +75,3 @@ Differenz = Sebastian minus Patrick, Minus heißt Sebastian ist schneller. 2023 
 
 Marathon: Patrick ist im September 2026 in Berlin 3:37:34 gelaufen; Sebastian am 25.10.2026 in Frankfurt
 3:35:35, also 1:59 schneller.
-
-## Leistungswerte
-
-Alle Zonen in Strava sind Schätzwerte; ein Test mit gemessenen Werten fehlt in jeder Disziplin.
-
-Achtung: Die Strava-Pacezonen (6 Zonen) sind nicht dasselbe wie die HF-Zonen. Strava-Pace-Z2 reicht bis
-4:57 min/km und schließt damit sogar das Marathontempo ein; für lockere Läufe gilt die **HF-Zone 2** (123–152 bpm),
-nicht die Pace-Z2. Beispiel 03.10.2026: 5:31 min/km bei Ø 142 bpm.
-
-| Wert | Stand 04.10.2026 | Verlässlichkeit |
-|---|---|---|
-| Gewicht | 75 kg (Strava-Profil) | aus dem Profil |
-| HF-Zonen | Strava: Z1 bis 122, Z2 123–152, Z3 153–167, Z4 168–182, Z5 ab 183 bpm | aus dem Alter berechnet, nicht gemessen |
-| Rad-FTP | Strava: 167 W | geschätzt, vermutlich zu niedrig |
-| Strava-Pacezonen Lauf (min/km) | Strava: Z1 langsamer als 5:45, Z2 5:45–4:57, Z3 4:57–4:27, Z4 4:27–4:10, Z5 4:10–3:55, Z6 schneller als 3:55 | Prognose aus geschätzter 5-km-Zeit von 20:38 |
-| Laktatschwelle Lauf | Garmin: 170 bpm, 4:21/km, 400 W (5,33 W/kg) | Garmin-Schätzung, Pace eher optimistisch |
-| Höchste HF im Training | ca. 178–185 bpm (Läufe, laut Garmin) | keine echte Max-HF, kein Test |
-| Schwimmpace | 8.9.: 300 m in ca. 1:44/100 m, danach 1:54 bis 1:57 | Einzelsatz, kein CSS-Test |
-| Max-HF, CSS | nicht vorhanden | offen |
-
-## Geräte und Datenfluss
-
-- Uhr: Garmin Forerunner 255 Music, zeichnet alle Einheiten auf
-- Datenweg: Uhr → Garmin Connect → Strava → Claude-Konnektor für Strava
-- Herzfrequenz und Laufleistung kommen seit 03.10.2026 über Strava an (Strava-Zugriff auf Gesundheitsdaten freigegeben)
-- Rad: Canyon Aeroad CF SLX 7 AXS, kein Powermeter
-- Indoor-Training: Wahoo Kickr Core, aufgezeichnet mit der Uhr; Indoor-Rides enthalten in Strava nur Dauer und Kalorien, keine Watt-, HF- oder Distanzdaten
-- Verpflegung: Xenofit Competition Pulver auf dem Rad; Gels: Testphase, Wahl noch offen
-
-## Offene Angaben
-
-Diese Punkte braucht Claude für ein belastbares Coaching; die ersten drei bringen am meisten.
-
-- [ ] Max-HF per Test, Schwellen-HF gegen Garmin-Wert (170 bpm) prüfen
-- [ ] Ironman Frankfurt: Zielzeit
-- [ ] Rad: FTP-Test auf dem Kickr Core
-- [ ] Schwimmen: CSS-Test, Poollänge, Zugang zu Freiwasser
-- [ ] Verletzungen und aktuelle Beschwerden
-- [ ] Realistische Wochenstunden und feste Trainingstage
-- [ ] Schlaf, HRV, Ruhepuls und Gewichtsverlauf
-- [ ] Gels: Wahl nach Testphase
-- [ ] Ernährung: Kohlenhydrate pro Stunde, Magenverträglichkeit, Schweißrate

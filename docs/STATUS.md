@@ -1,6 +1,6 @@
 # Status & nächste Schritte
 
-> Zuletzt aktualisiert: 25.10.2026 (Frankfurt Marathon eingetragen, Tab FFM-Marathon-Plan entfernt). Diese Datei am Ende jeder Arbeitssitzung aktualisieren
+> Zuletzt aktualisiert: 31.10.2026 (vertrauliche Daten ins private Repo `athlete_private_data` verschoben). Diese Datei am Ende jeder Arbeitssitzung aktualisieren
 > (was erledigt wurde, was als Nächstes kommt, neue Entscheidungen).
 
 ## Aktueller Stand
@@ -26,6 +26,8 @@
 - ✅ Tab „FFM-Marathon-Plan" (09.–25.10.2026) nach dem Rennen entfernt; Code/Daten in der Git-Historie
 - ✅ Täglicher Task „athlete.coach Dashboard-Update", 21:59 Uhr, folgt [`UPDATE.md`](UPDATE.md)
 - ✅ **GitHub Pages** ist aktiv: `https://cpt-backfisch.github.io/Athlete_Coach_2.0/` (von Sebastian bestätigt, 05.10.2026)
+- ✅ **Privates Repo** `athlete_private_data` (31.10.2026): Leistungswerte, Equipment, Trainingsplan, Feedback-Log,
+  Rennanalysen. Im öffentlichen Athletenprofil nur noch Ziele, Rennen, offizielle Zeiten
 - ✅ Täglicher Task läuft: automatische Commits „Update …" am 05.10. und 06.10.2026 bestätigt
 
 ## Nächste Schritte (Vorschlag, Reihenfolge offen)
@@ -80,3 +82,4 @@
 | 09.10.2026 | Startzeit auf der Seite nur pro Besucher (Browser-Speicher); zentrale Änderung = `start` in `data/marathon_plan.json` + build |
 | 25.10.2026 | Frankfurt Marathon: offizielle Zeit 3:35:35 (Screenshot Ergebnis-App) in `races.json` und Athletenprofil; ersetzt den vorläufigen Uhr-Wert 3:35:34 |
 | 25.10.2026 | Tab „FFM-Marathon-Plan“ ganz entfernt statt zur Ergebnis-Ansicht umgebaut (Sebastian); Daten-Dateien gelöscht, Karten-Farben aus dem Design entfernt |
+| 31.10.2026 | Vertrauliche Daten (Leistungswerte, Zonen, Equipment, Trainingsplan, Feedback, Rennanalysen) ins private Repo `athlete_private_data`; öffentliches Athletenprofil nur noch Ziele, Rennen, offizielle Zeiten. Ältere Werte bleiben in der Git-Historie (bewusst nicht umgeschrieben) |
