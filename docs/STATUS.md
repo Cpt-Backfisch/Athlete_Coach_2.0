@@ -83,3 +83,4 @@
 | 25.10.2026 | Frankfurt Marathon: offizielle Zeit 3:35:35 (Screenshot Ergebnis-App) in `races.json` und Athletenprofil; ersetzt den vorläufigen Uhr-Wert 3:35:34 |
 | 25.10.2026 | Tab „FFM-Marathon-Plan“ ganz entfernt statt zur Ergebnis-Ansicht umgebaut (Sebastian); Daten-Dateien gelöscht, Karten-Farben aus dem Design entfernt |
 | 31.10.2026 | Vertrauliche Daten (Leistungswerte, Zonen, Equipment, Trainingsplan, Feedback, Rennanalysen) ins private Repo `athlete_private_data`; öffentliches Athletenprofil nur noch Ziele, Rennen, offizielle Zeiten. Ältere Werte bleiben in der Git-Historie (bewusst nicht umgeschrieben) |
+| 04.11.2026 | Athletenprofil: Trainingsrahmen auf 6–8 h/Woche (Spitze ca. 10–11 h) aktualisiert; privates Repo heißt jetzt `Knowledge_Base_Private` (Ordner `sport/`) |

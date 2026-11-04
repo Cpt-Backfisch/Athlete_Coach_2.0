@@ -1,10 +1,10 @@
 # Athletenprofil Sebastian
 
-> Zuletzt aktualisiert: 31.10.2026. Öffentliche Quelle für Ziele, Rennkalender und offizielle Wettkampfzeiten.
+> Zuletzt aktualisiert: 04.11.2026. Öffentliche Quelle für Ziele, Rennkalender und offizielle Wettkampfzeiten.
 > Claude liest diese Datei vor jedem Coaching-Gespräch und hält sie danach aktuell.
 > Offizielle Wettkampfzeiten aus dieser Datei gelten auch für das Dashboard.
 > Leistungswerte, Zonen, Equipment, Trainingsplan, Feedback und Rennanalysen liegen im **privaten** Repo
-> `Cpt-Backfisch/athlete_private_data` – nie hier eintragen.
+> `Cpt-Backfisch/Knowledge_Base_Private` (Ordner `sport/`) – nie hier eintragen.
 
 ## Ziele und Rennen
 
@@ -18,7 +18,7 @@ Halbmarathon und die 70.3 Kraichgau als Zwischenziele. Die Zielzeit für den Iro
 | 70.3 Ironman Kraichgau | 23.05.2027 | Patrick schlagen; Vorbereitungswettkampf für Ironman Frankfurt | Patrick startet ebenfalls |
 | Ironman Frankfurt | 27.06.2027 | Zielzeit offen | Hauptziel |
 
-Trainingsrahmen: 5-Phasen-Jahresplan, Spitze bei 15 bis 20 Stunden pro Woche.
+Trainingsrahmen: 6 bis 8 Stunden pro Woche im Alltag, Spitze ca. 10 bis 11 Stunden vor der 70.3 Kraichgau.
 
 Der Frankfurt Marathon ist gelaufen (Ergebnis unten). Der Trainingsplan liegt im privaten Repo.
 
