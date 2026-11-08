@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-03T15:43:36+01:00",
+ "updated_at": "2026-11-08T13:57:32+01:00",
  "activities": [
   {"start_local": "2024-01-13T11:30:25", "sport_type": "Run", "distance_m": 11684.0, "moving_time_s": 3528, "elapsed_time_s": 3531, "elevation_gain_m": 36.0},
   {"start_local": "2024-01-15T19:35:37", "sport_type": "Swim", "distance_m": 825.0, "moving_time_s": 1527, "elapsed_time_s": 2554, "elevation_gain_m": 0.0},
@@ -436,6 +436,10 @@
   {"start_local": "2026-10-28T18:51:01", "sport_type": "Ride", "distance_m": 20954.8, "moving_time_s": 2736, "elapsed_time_s": 2736, "elevation_gain_m": 0.0},
   {"start_local": "2026-10-31T10:30:14", "sport_type": "Ride", "distance_m": 14423.5, "moving_time_s": 1859, "elapsed_time_s": 1859, "elevation_gain_m": 0.0},
   {"start_local": "2026-10-31T11:19:10", "sport_type": "WeightTraining", "distance_m": 0.0, "moving_time_s": 4152, "elapsed_time_s": 4152, "elevation_gain_m": 0.0},
-  {"start_local": "2026-11-02T19:11:58", "sport_type": "Run", "distance_m": 7321.8, "moving_time_s": 2160, "elapsed_time_s": 2160, "elevation_gain_m": 13.0}
+  {"start_local": "2026-11-02T19:11:58", "sport_type": "Run", "distance_m": 7321.8, "moving_time_s": 2160, "elapsed_time_s": 2160, "elevation_gain_m": 13.0},
+  {"start_local": "2026-11-03T19:34:44", "sport_type": "Ride", "distance_m": 29027.2, "moving_time_s": 3614, "elapsed_time_s": 3614, "elevation_gain_m": 0.0},
+  {"start_local": "2026-11-06T19:16:00", "sport_type": "WeightTraining", "distance_m": 0.0, "moving_time_s": 3600, "elapsed_time_s": 3600, "elevation_gain_m": 0.0},
+  {"start_local": "2026-11-07T14:59:39", "sport_type": "Ride", "distance_m": 35666.3, "moving_time_s": 4507, "elapsed_time_s": 4507, "elevation_gain_m": 0.0},
+  {"start_local": "2026-11-08T12:57:33", "sport_type": "Run", "distance_m": 8480.8, "moving_time_s": 2833, "elapsed_time_s": 2901, "elevation_gain_m": 28.0}
  ]
 }
